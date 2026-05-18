@@ -1,151 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jeevan Raj M | AI/ML Engineer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Jeevan Raj M | AI/ML Engineer</title>
+<meta name="description" content="AI/ML Engineer specializing in Healthcare AI, NLP, Computer Vision, and Recommender Systems. Building production-ready ML systems."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#050a14;--surface:#0a1628;--surface2:#111d33;--border:#1e3050;
+--text:#e2e8f0;--text-dim:#94a3b8;--accent:#38bdf8;--accent2:#818cf8;
+--gradient:linear-gradient(135deg,#38bdf8,#818cf8);
+--card-bg:rgba(15,25,50,0.7);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent2)}
+
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:100;backdrop-filter:blur(20px);background:rgba(5,10,20,.8);border-bottom:1px solid var(--border);padding:.8rem 0;transition:all .3s}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 1.5rem;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;font-size:1.3rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links a{color:var(--text-dim);font-size:.85rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}
+.hamburger span{width:24px;height:2px;background:var(--text);transition:.3s}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 1.5rem 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 20%,rgba(56,189,248,.08) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(129,140,248,.06) 0%,transparent 50%);animation:drift 20s ease-in-out infinite alternate}
+@keyframes drift{0%{transform:translate(0,0)}100%{transform:translate(-3%,3%)}}
+.hero-content{position:relative;z-index:1;max-width:750px}
+.hero-location{display:inline-flex;align-items:center;gap:.4rem;color:var(--text-dim);font-size:.85rem;margin-bottom:1.2rem;padding:.4rem 1rem;border:1px solid var(--border);border-radius:999px}
+.hero h1{font-size:clamp(2.5rem,6vw,4rem);font-weight:900;letter-spacing:-1px;margin-bottom:.5rem}
+.hero h1 span{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-title{font-size:1.3rem;font-weight:600;color:var(--accent);margin-bottom:1rem;font-family:'JetBrains Mono',monospace}
+.hero-title .cursor{animation:blink 1s step-end infinite;color:var(--accent2)}
+@keyframes blink{50%{opacity:0}}
+.hero p{color:var(--text-dim);font-size:1.05rem;line-height:1.7;margin-bottom:2rem}
+.btn-group{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn{padding:.75rem 1.8rem;border-radius:8px;font-weight:600;font-size:.9rem;transition:all .3s;display:inline-flex;align-items:center;gap:.5rem;border:none;cursor:pointer}
+.btn-primary{background:var(--gradient);color:#0f172a}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(56,189,248,.3)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+
+/* SECTIONS */
+section{padding:5rem 1.5rem}
+.container{max-width:1100px;margin:0 auto}
+.section-label{font-size:.75rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent);font-weight:600;margin-bottom:.5rem}
+.section-title{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;margin-bottom:1rem;letter-spacing:-.5px}
+.section-desc{color:var(--text-dim);max-width:600px;margin-bottom:3rem;font-size:1rem}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.about-text p{color:var(--text-dim);margin-bottom:1rem;line-height:1.8}
+.about-cards{display:flex;flex-direction:column;gap:1rem}
+.about-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.5rem;backdrop-filter:blur(10px);transition:border-color .3s}
+.about-card:hover{border-color:var(--accent)}
+.about-card h4{font-size:.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:.3rem}
+.about-card p{color:var(--text);font-size:.95rem;font-weight:500}
+.about-card .sub{color:var(--text-dim);font-size:.8rem;font-weight:400}
+
+/* PROJECTS */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem}
+.project-card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:2rem;backdrop-filter:blur(10px);transition:all .3s;position:relative;overflow:hidden}
+.project-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:0;transition:opacity .3s}
+.project-card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.project-card:hover::before{opacity:1}
+.project-icon{font-size:2rem;margin-bottom:1rem}
+.project-card h3{font-size:1.15rem;font-weight:700;margin-bottom:.5rem}
+.project-card p{color:var(--text-dim);font-size:.9rem;line-height:1.6;margin-bottom:1rem}
+.project-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.2rem}
+.tag{padding:.2rem .6rem;border-radius:6px;font-size:.7rem;font-weight:600;background:rgba(56,189,248,.1);color:var(--accent);border:1px solid rgba(56,189,248,.2)}
+.project-link{font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem}
+.project-metrics{margin-top:.5rem;font-size:.8rem;color:var(--accent);font-weight:600;font-family:'JetBrains Mono',monospace}
+
+/* SKILLS */
+.skills-categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem}
+.skill-category{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:1.5rem;backdrop-filter:blur(10px)}
+.skill-category h3{font-size:.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--accent);margin-bottom:1rem;font-weight:600}
+.skill-items{display:flex;flex-wrap:wrap;gap:.5rem}
+.skill-badge{padding:.4rem .8rem;border-radius:6px;font-size:.78rem;font-weight:500;background:var(--surface2);border:1px solid var(--border);color:var(--text);transition:all .2s}
+.skill-badge:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+
+/* EXPERIENCE */
+.timeline{position:relative;padding-left:2rem}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent2))}
+.timeline-item{position:relative;margin-bottom:2.5rem;padding-left:1.5rem}
+.timeline-item::before{content:'';position:absolute;left:-2.35rem;top:.3rem;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid var(--bg);box-shadow:0 0 0 2px var(--accent)}
+.timeline-item h3{font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
+.timeline-item .company{color:var(--accent);font-weight:600;font-size:.9rem}
+.timeline-item .period{color:var(--text-dim);font-size:.8rem;margin-bottom:.6rem}
+.timeline-item ul{list-style:none;padding:0}
+.timeline-item li{color:var(--text-dim);font-size:.88rem;padding:.2rem 0;padding-left:1rem;position:relative}
+.timeline-item li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+
+/* CONTACT */
+.contact{text-align:center}
+.contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2rem}
+.contact-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:1.2rem 2rem;backdrop-filter:blur(10px);transition:all .3s;display:flex;align-items:center;gap:.8rem;color:var(--text)}
+.contact-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.contact-card span{font-weight:600;font-size:.9rem}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--text-dim);font-size:.8rem}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hamburger{display:flex}
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;background:rgba(5,10,20,.95);padding:1.5rem;gap:1rem;backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+  .nav-links.open{display:flex}
+  .about-grid{grid-template-columns:1fr}
+  .hero h1{font-size:2.2rem}
+  .projects-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="#home">JRM</a>
-    <nav>
-      <a href="#about">About</a>
-      <a href="#projects">Projects</a>
-      <a href="#skills">Skills</a>
-      <a href="#experience">Experience</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
 
-  <main>
-    <section id="home" class="hero">
-      <div class="hero-content">
-        <p class="eyebrow">Mysuru, Karnataka, India</p>
-        <h1>Jeevan Raj M</h1>
-        <h2><span id="typed-title">AI/ML Engineer</span><span class="cursor">|</span></h2>
-        <p class="hero-copy">
-          Final-year Artificial Intelligence & Data Science engineer building healthcare AI,
-          computer vision, NLP systems, and deployable ML products.
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="#projects">View Projects</a>
-          <a class="button secondary" href="mailto:jeevanrajm2882004@gmail.com">Contact Me</a>
-        </div>
-      </div>
-      <div class="hero-panel">
-        <div class="metric">
-          <span>GPA</span>
-          <strong>9.74</strong>
-        </div>
-        <div class="metric">
-          <span>Focus</span>
-          <strong>Healthcare AI</strong>
-        </div>
-        <div class="metric">
-          <span>Graduating</span>
-          <strong>July 2026</strong>
-        </div>
-      </div>
-    </section>
+<nav>
+<div class="nav-inner">
+  <a href="#home" class="logo">JRM</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+</nav>
 
-    <section id="about" class="section">
-      <div class="section-heading">
-        <p class="eyebrow">About</p>
-        <h2>Applied AI engineer with production instincts.</h2>
-      </div>
-      <div class="about-grid">
-        <div>
-          <p>
-            I am a final-year B.E. student in Artificial Intelligence & Data Science at the
-            University of Mysore School of Engineering, with a 9.74 GPA across 7 semesters.
-            My work focuses on practical AI systems: clinical NLP, radiology computer vision,
-            semantic segmentation, and hybrid recommender systems.
-          </p>
-        </div>
-        <div class="info-list">
-          <p><strong>Education:</strong> B.E. AI & Data Science, University of Mysore School of Engineering</p>
-          <p><strong>Diploma:</strong> Advanced Diploma in Computer Programming, AIMIT Institute, Mysore</p>
-          <p><strong>Current Role:</strong> AI Development Intern, Kinetrix Technologies LLP</p>
-        </div>
-      </div>
-    </section>
+<section class="hero" id="home">
+<div class="hero-content">
+  <div class="hero-location">📍 Mysuru, Karnataka, India</div>
+  <h1>Jeevan <span>Raj M</span></h1>
+  <div class="hero-title" id="typedTitle">AI/ML Engineer<span class="cursor">|</span></div>
+  <p>Final-year AI &amp; Data Science engineer building healthcare AI platforms, computer vision systems, clinical NLP pipelines, and hybrid recommender engines. Production-first, always deployed.</p>
+  <div class="btn-group">
+    <a href="#projects" class="btn btn-primary">View Projects ↓</a>
+    <a href="mailto:jeevanrajm2882004@gmail.com" class="btn btn-outline">Contact Me</a>
+  </div>
+</div>
+</section>
 
-    <section id="projects" class="section">
-      <div class="section-heading">
-        <p class="eyebrow">Projects</p>
-        <h2>Systems built around real AI use cases.</h2>
+<section id="about">
+<div class="container">
+  <div class="section-label">About</div>
+  <div class="section-title">Applied AI engineer with production instincts.</div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>I'm a final-year B.E. student in Artificial Intelligence &amp; Data Science at the University of Mysore School of Engineering, holding a <strong>9.74 GPA</strong> across 7 semesters.</p>
+      <p>My work spans clinical NLP, radiology computer vision, semantic segmentation for disaster response, and hybrid recommender systems. I don't just train models — I build end-to-end systems with FastAPI backends, Streamlit interfaces, and cloud deployments.</p>
+      <p>Currently interning at <strong>Kinetrix Technologies LLP</strong>, building an AI-integrated healthcare platform with Whisper + BERT NLP pipelines and YOLO + ResNet radiology modules.</p>
+    </div>
+    <div class="about-cards">
+      <div class="about-card">
+        <h4>Education</h4>
+        <p>B.E. Artificial Intelligence &amp; Data Science</p>
+        <div class="sub">University of Mysore School of Engineering • GPA: 9.74/10</div>
       </div>
-      <div class="project-grid">
-        <article class="project-card">
-          <h3>AI-Integrated Healthcare Platform</h3>
-          <p>Clinical NLP and radiology support platform with voice dictation, structured reports, EHR interoperability, and secure APIs.</p>
-          <div class="tags"><span>Whisper</span><span>BERT</span><span>YOLO</span><span>FastAPI</span><span>FHIR</span></div>
-          <a href="https://github.com/jeevanraj-28">View Work</a>
-        </article>
-        <article class="project-card">
-          <h3>Disaster Segmentation</h3>
-          <p>Semantic segmentation of disaster-affected zones from satellite and aerial imagery using PyTorch and FloodNet.</p>
-          <div class="tags"><span>PyTorch</span><span>OpenCV</span><span>FloodNet</span><span>Segmentation</span></div>
-          <a href="https://github.com/jeevanraj-28/Disaster-segmentation">View Repo</a>
-        </article>
-        <article class="project-card">
-          <h3>CafeCritic Recommender</h3>
-          <p>Hybrid cafe recommendation engine combining SVD collaborative filtering with TF-IDF content similarity.</p>
-          <div class="tags"><span>Scikit-learn</span><span>Pandas</span><span>Streamlit</span><span>Flask</span></div>
-          <a href="https://github.com/jeevanraj-28/cafecritic-recommender">View Repo</a>
-        </article>
+      <div class="about-card">
+        <h4>Diploma</h4>
+        <p>Advanced Diploma in Computer Programming</p>
+        <div class="sub">AIMIT Institute, Mysore • 2026</div>
       </div>
-    </section>
+      <div class="about-card">
+        <h4>Current Role</h4>
+        <p>AI Development Intern</p>
+        <div class="sub">Kinetrix Technologies LLP • Oct 2025–Present</div>
+      </div>
+      <div class="about-card">
+        <h4>Graduating</h4>
+        <p>July 2026</p>
+        <div class="sub">Open to AI/ML Engineer &amp; Data Scientist roles</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
 
-    <section id="skills" class="section">
-      <div class="section-heading">
-        <p class="eyebrow">Skills</p>
-        <h2>ML stack for research, APIs, and demos.</h2>
-      </div>
-      <div class="skill-grid">
-        <span>Python</span><span>TensorFlow</span><span>PyTorch</span><span>Scikit-learn</span>
-        <span>FastAPI</span><span>Flask</span><span>Pandas</span><span>NumPy</span>
-        <span>OpenCV</span><span>NLP</span><span>Computer Vision</span><span>Recommendation Systems</span>
-        <span>PostgreSQL</span><span>AWS</span><span>Azure</span><span>Git</span>
-      </div>
-    </section>
+<section id="projects" style="background:var(--surface)">
+<div class="container">
+  <div class="section-label">Projects</div>
+  <div class="section-title">Systems built around real AI use cases.</div>
+  <div class="section-desc">Not tutorials. Not toy demos. These are engineered ML systems with real architectures, real metrics, and real deployment.</div>
+  <div class="projects-grid">
 
-    <section id="experience" class="section">
-      <div class="section-heading">
-        <p class="eyebrow">Experience</p>
-        <h2>Internship work aligned with applied ML engineering.</h2>
+    <div class="project-card">
+      <div class="project-icon">🏥</div>
+      <h3>AI-Integrated Healthcare Platform</h3>
+      <p>Full-stack healthcare AI with NLP voice dictation (Whisper + BERT → structured clinical reports), radiology CV (YOLO + ResNet for X-ray/CT/MRI analysis), EHR interoperability via HL7 FHIR/DICOM, and OAuth2/JWT/RBAC security.</p>
+      <div class="project-tags">
+        <span class="tag">FastAPI</span><span class="tag">BERT</span><span class="tag">Whisper</span><span class="tag">YOLO</span><span class="tag">ResNet</span><span class="tag">React.js</span><span class="tag">PostgreSQL</span><span class="tag">AWS</span>
       </div>
-      <div class="timeline">
-        <div class="timeline-item">
-          <span>Oct 2025 - Present</span>
-          <h3>AI Development Intern - Kinetrix Technologies LLP</h3>
-          <p>Building an AI-integrated healthcare platform with NLP voice dictation, radiology CV modules, FHIR/DICOM interoperability, and secure deployment.</p>
-        </div>
-        <div class="timeline-item">
-          <span>Sep 2025 - Nov 2025</span>
-          <h3>Data Science & ML Intern - Infotact Solutions</h3>
-          <p>Worked on full ML workflows including data cleaning, feature engineering, supervised learning, model training, and evaluation.</p>
-        </div>
-      </div>
-    </section>
+      <a href="https://github.com/jeevanraj-28" class="project-link">Case study coming soon →</a>
+    </div>
 
-    <section id="contact" class="section contact">
-      <div class="section-heading">
-        <p class="eyebrow">Contact</p>
-        <h2>Open to AI/ML internships and fresher ML engineer roles.</h2>
+    <div class="project-card">
+      <div class="project-icon">🌊</div>
+      <h3>Disaster Segmentation</h3>
+      <p>Semantic segmentation of flood-affected zones from UAV/aerial imagery using U-Net + ResNet34 on FloodNet. Full end-to-end pipeline: preprocessing, augmentation, training, evaluation, and visual diagnostics.</p>
+      <div class="project-tags">
+        <span class="tag">PyTorch</span><span class="tag">U-Net</span><span class="tag">ResNet34</span><span class="tag">OpenCV</span><span class="tag">FloodNet</span>
       </div>
-      <div class="contact-links">
-        <a href="mailto:jeevanrajm2882004@gmail.com">Email</a>
-        <a href="https://linkedin.com/in/jeevan-raj-m-5ba64a383">LinkedIn</a>
-        <a href="https://github.com/jeevanraj-28">GitHub</a>
-      </div>
-    </section>
-  </main>
+      <div class="project-metrics">70.7% mIoU • 89.3% Accuracy • 82.3% Dice</div>
+      <a href="https://github.com/jeevanraj-28/Disaster-segmentation" class="project-link">View Repository →</a>
+    </div>
 
-  <script src="script.js"></script>
+    <div class="project-card">
+      <div class="project-icon">☕</div>
+      <h3>CafeCritic Recommender</h3>
+      <p>Hybrid recommendation engine combining SVD collaborative filtering (70%) with TF-IDF content similarity (30%). Interactive Streamlit UI with EDA dashboard showing rating distributions, city insights, and cuisine patterns.</p>
+      <div class="project-tags">
+        <span class="tag">Scikit-learn</span><span class="tag">SVD</span><span class="tag">TF-IDF</span><span class="tag">Streamlit</span><span class="tag">Pandas</span><span class="tag">Flask</span>
+      </div>
+      <a href="https://github.com/jeevanraj-28/cafecritic-recommender" class="project-link">View Repository →</a>
+    </div>
+
+    <div class="project-card">
+      <div class="project-icon">🩺</div>
+      <h3>Clinical NLP Demo</h3>
+      <p>Streamlit app that structures synthetic doctor voice notes into Chief Complaint, Diagnosis, Medications, Follow-up Plan, and Summary using open-source NLP models. Deployed on Hugging Face Spaces.</p>
+      <div class="project-tags">
+        <span class="tag">Streamlit</span><span class="tag">Transformers</span><span class="tag">DistilBART</span><span class="tag">Hugging Face</span>
+      </div>
+      <a href="https://github.com/jeevanraj-28/Clinical-NLP-Demo" class="project-link">View Repository →</a>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<section id="skills">
+<div class="container">
+  <div class="section-label">Skills</div>
+  <div class="section-title">ML stack for research, APIs, and production.</div>
+  <div class="skills-categories">
+    <div class="skill-category">
+      <h3>Languages</h3>
+      <div class="skill-items">
+        <span class="skill-badge">Python</span><span class="skill-badge">C/C++</span><span class="skill-badge">SQL</span><span class="skill-badge">JavaScript</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h3>AI / ML / DL</h3>
+      <div class="skill-items">
+        <span class="skill-badge">TensorFlow</span><span class="skill-badge">PyTorch</span><span class="skill-badge">Scikit-learn</span><span class="skill-badge">Hugging Face</span><span class="skill-badge">OpenCV</span><span class="skill-badge">Pandas</span><span class="skill-badge">NumPy</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h3>NLP & CV Models</h3>
+      <div class="skill-items">
+        <span class="skill-badge">BERT</span><span class="skill-badge">Whisper</span><span class="skill-badge">YOLO</span><span class="skill-badge">ResNet</span><span class="skill-badge">U-Net</span><span class="skill-badge">DistilBART</span><span class="skill-badge">Transformers</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h3>Backend & Cloud</h3>
+      <div class="skill-items">
+        <span class="skill-badge">FastAPI</span><span class="skill-badge">Flask</span><span class="skill-badge">Streamlit</span><span class="skill-badge">React.js</span><span class="skill-badge">PostgreSQL</span><span class="skill-badge">AWS</span><span class="skill-badge">Azure</span><span class="skill-badge">Docker</span><span class="skill-badge">Git</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h3>Concepts</h3>
+      <div class="skill-items">
+        <span class="skill-badge">ML Pipelines</span><span class="skill-badge">Feature Engineering</span><span class="skill-badge">Model Evaluation</span><span class="skill-badge">Statistical Modelling</span><span class="skill-badge">EDA</span><span class="skill-badge">DSA</span><span class="skill-badge">REST APIs</span>
+      </div>
+    </div>
+    <div class="skill-category">
+      <h3>Healthcare AI</h3>
+      <div class="skill-items">
+        <span class="skill-badge">HL7 FHIR</span><span class="skill-badge">DICOM</span><span class="skill-badge">OAuth2/JWT</span><span class="skill-badge">RBAC</span><span class="skill-badge">Clinical NLP</span><span class="skill-badge">EHR Systems</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="experience" style="background:var(--surface)">
+<div class="container">
+  <div class="section-label">Experience</div>
+  <div class="section-title">Internship work aligned with applied ML engineering.</div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <h3>AI Development Intern</h3>
+      <div class="company">Kinetrix Technologies LLP</div>
+      <div class="period">October 2025 – Present</div>
+      <ul>
+        <li>Building AI-Integrated Healthcare Platform using Open Healthcare Resources</li>
+        <li>NLP pipeline: Whisper + BERT for real-time voice dictation → structured clinical reports</li>
+        <li>Computer vision: YOLO + ResNet for radiology image analysis (X-ray, CT, MRI)</li>
+        <li>EHR interoperability via HL7 FHIR and DICOM standards</li>
+        <li>Security layer: OAuth2, JWT, RBAC for healthcare compliance</li>
+        <li>Stack: Python (FastAPI), React.js, PostgreSQL, TensorFlow, AWS/Azure</li>
+      </ul>
+    </div>
+    <div class="timeline-item">
+      <h3>Data Science &amp; ML Intern</h3>
+      <div class="company">Infotact Solutions (Virtual)</div>
+      <div class="period">September – November 2025</div>
+      <ul>
+        <li>Full ML workflows: data collection, cleaning, feature engineering, model training, evaluation</li>
+        <li>Applied supervised learning on real-world datasets with Scikit-learn</li>
+        <li>Built reproducible pipelines with Python, Pandas, NumPy</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="contact" class="contact">
+<div class="container">
+  <div class="section-label">Contact</div>
+  <div class="section-title">Open to AI/ML Engineer &amp; Data Scientist roles.</div>
+  <p style="color:var(--text-dim);max-width:500px;margin:0 auto 1rem">Especially interested in startups building real products with NLP, computer vision, or healthcare AI — Bangalore and remote.</p>
+  <div class="contact-links">
+    <a href="mailto:jeevanrajm2882004@gmail.com" class="contact-card">
+      <span>📧 jeevanrajm2882004@gmail.com</span>
+    </a>
+    <a href="https://linkedin.com/in/jeevan-raj-m-5ba64a383" target="_blank" class="contact-card">
+      <span>🔗 LinkedIn</span>
+    </a>
+    <a href="https://github.com/jeevanraj-28" target="_blank" class="contact-card">
+      <span>💻 GitHub</span>
+    </a>
+  </div>
+</div>
+</section>
+
+<footer>
+  <p>© 2026 Jeevan Raj M — Built with purpose, deployed with intent.</p>
+</footer>
+
+<script>
+// Mobile menu
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.getElementById('navLinks');
+hamburger.addEventListener('click',()=>{navLinks.classList.toggle('open')});
+document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>navLinks.classList.remove('open')));
+
+// Typing effect
+const titles=["AI/ML Engineer","Healthcare AI Builder","Computer Vision Engineer","NLP Systems Developer"];
+let ti=0,ci=0,deleting=false;
+const el=document.getElementById('typedTitle');
+function type(){
+  const current=titles[ti];
+  if(!deleting){
+    el.innerHTML=current.substring(0,ci+1)+'<span class="cursor">|</span>';
+    ci++;
+    if(ci===current.length){deleting=true;setTimeout(type,1800);return}
+  }else{
+    el.innerHTML=current.substring(0,ci-1)+'<span class="cursor">|</span>';
+    ci--;
+    if(ci===0){deleting=false;ti=(ti+1)%titles.length}
+  }
+  setTimeout(type,deleting?40:80);
+}
+setTimeout(type,1000);
+
+// Scroll animations
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}})
+},{threshold:0.1});
+document.querySelectorAll('.project-card,.about-card,.skill-category,.timeline-item,.contact-card').forEach(el=>{
+  el.style.opacity='0';el.style.transform='translateY(30px)';el.style.transition='opacity .6s ease,transform .6s ease';
+  observer.observe(el);
+});
+
+// Active nav highlighting
+const sections=document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  const scrollY=window.scrollY+100;
+  sections.forEach(s=>{
+    const top=s.offsetTop,h=s.offsetHeight,id=s.getAttribute('id');
+    const link=document.querySelector('.nav-links a[href="#'+id+'"]');
+    if(link){if(scrollY>=top&&scrollY<top+h)link.classList.add('active');else link.classList.remove('active')}
+  });
+});
+</script>
 </body>
 </html>

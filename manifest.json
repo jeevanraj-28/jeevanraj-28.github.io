@@ -1,0 +1,18 @@
+{
+  "short_name": "Jeevan Raj M",
+  "name": "Jeevan Raj M — AI/ML Engineer",
+  "description": "Portfolio of Jeevan Raj M, an AI/ML Engineer specializing in Deep Learning, NLP, and Computer Vision.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#0e1513",
+  "theme_color": "#0e1513",
+  "display": "standalone",
+  "orientation": "portrait"
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0e1513" />
+  
+  <!-- Subtle Grid -->
+  <path d="M 0 64 H 512 M 0 128 H 512 M 0 192 H 512 M 0 256 H 512 M 0 320 H 512 M 0 384 H 512 M 0 448 H 512" stroke="#B1FFD6" stroke-opacity="0.05" stroke-width="2" />
+  <path d="M 64 0 V 512 M 128 0 V 512 M 192 0 V 512 M 256 0 V 512 M 320 0 V 512 M 384 0 V 512 M 448 0 V 512" stroke="#B1FFD6" stroke-opacity="0.05" stroke-width="2" />
+  
+  <!-- Cyber-Brutalist Frame -->
+  <rect x="32" y="32" width="448" height="448" fill="none" stroke="#B1FFD6" stroke-width="8" />
+  <!-- Corner tech marks -->
+  <line x1="16" y1="32" x2="48" y2="32" stroke="#8B5CF6" stroke-width="12" />
+  <line x1="464" y1="32" x2="496" y2="32" stroke="#8B5CF6" stroke-width="12" />
+  <line x1="16" y1="480" x2="48" y2="480" stroke="#8B5CF6" stroke-width="12" />
+  <line x1="464" y1="480" x2="496" y2="480" stroke="#8B5CF6" stroke-width="12" />
+
+  <!-- Monogram text -->
+  <text x="256" y="295" font-family="'Space Grotesk', sans-serif" font-size="160" font-weight="bold" fill="#B1FFD6" text-anchor="middle" letter-spacing="-10">JR</text>
+  <text x="256" y="380" font-family="'JetBrains Mono', monospace" font-size="28" fill="#8B5CF6" text-anchor="middle" letter-spacing="4">AI/ML_ENG</text>
+</svg>

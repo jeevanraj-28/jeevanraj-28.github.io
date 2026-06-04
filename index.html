@@ -64,7 +64,13 @@
     <style>
         body {
             background-color: #0e1513;
-            cursor: none;
+        }
+
+        /* Only hide cursor on devices that actually have a mouse pointer */
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: none;
+            }
         }
 
         #bg-canvas {
@@ -91,6 +97,17 @@
             border-color: #8B5CF6;
         }
 
+        /* Reduce card shadow on small screens to prevent overflow */
+        @media (max-width: 767px) {
+            .brutalist-card {
+                box-shadow: 4px 4px 0px #8B5CF6;
+            }
+            .brutalist-card:hover {
+                transform: translate(-2px, -2px);
+                box-shadow: 6px 6px 0px #B1FFD6;
+            }
+        }
+
         .vertical-text {
             writing-mode: vertical-rl;
             text-orientation: mixed;
@@ -104,6 +121,7 @@
             opacity: 0.1;
         }
 
+        /* Custom cursor: only on pointer devices */
         #custom-cursor {
             width: 20px;
             height: 20px;
@@ -113,6 +131,13 @@
             pointer-events: none;
             z-index: 9999;
             transform: translate(-50%, -50%);
+            display: none; /* Hidden by default */
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            #custom-cursor {
+                display: block;
+            }
         }
 
         .cursor-expand #custom-cursor {
@@ -139,9 +164,15 @@
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+        /* Responsive asymmetric grid: 1 column on mobile, 12 on desktop */
         .asymmetric-grid {
             display: grid;
-            grid-template-columns: repeat(12, 1fr);
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 768px) {
+            .asymmetric-grid {
+                grid-template-columns: repeat(12, 1fr);
+            }
         }
 
         .skill-badge {
@@ -156,28 +187,125 @@
             background: #B1FFD6;
             color: #050505;
         }
+
+        /* ========== Mobile Navigation Menu ========== */
+        .mobile-menu-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(14, 21, 19, 0.97);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .mobile-menu-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .mobile-menu-overlay a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: #B1FFD6;
+            letter-spacing: 0.1em;
+            padding: 0.75rem 2rem;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .mobile-menu-overlay a:hover,
+        .mobile-menu-overlay a:active {
+            border-color: #8B5CF6;
+            color: #8B5CF6;
+        }
+
+        /* Hamburger button */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 200;
+            padding: 8px;
+        }
+        .hamburger span {
+            display: block;
+            width: 28px;
+            height: 2px;
+            background: #B1FFD6;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Decorative line on mobile menu */
+        .mobile-menu-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #B1FFD6, transparent);
+            opacity: 0.15;
+        }
     </style>
 </head>
 <body class="text-on-background font-body-md overflow-x-hidden selection:bg-secondary selection:text-white">
 <canvas id="bg-canvas"></canvas>
-<!-- Glitch Shapes -->
-<div class="glitch-shape w-64 h-64 top-20 right-20 rotate-45" id="shape-1"></div>
-<div class="glitch-shape w-96 h-32 bottom-40 left-10 -rotate-12" id="shape-2"></div>
-<div class="glitch-shape w-48 h-48 top-1/2 left-1/2 border-dashed" id="shape-3"></div>
+
+<!-- Glitch Shapes — hidden on mobile to prevent overflow -->
+<div class="glitch-shape w-64 h-64 top-20 right-20 rotate-45 hidden md:block" id="shape-1"></div>
+<div class="glitch-shape w-96 h-32 bottom-40 left-10 -rotate-12 hidden md:block" id="shape-2"></div>
+<div class="glitch-shape w-48 h-48 top-1/2 left-1/2 border-dashed hidden md:block" id="shape-3"></div>
+
 <div id="custom-cursor"></div>
-<!-- Navigation -->
-<nav class="fixed top-0 w-full z-50 mix-blend-difference flex justify-between items-center px-margin-mobile md:px-margin-desktop py-8">
+
+<!-- ========== Mobile Menu Overlay ========== -->
+<div class="mobile-menu-overlay" id="mobile-menu">
+    <a href="#about" class="mobile-nav-link">01_ABOUT</a>
+    <a href="#experience" class="mobile-nav-link">02_EXP</a>
+    <a href="#projects" class="mobile-nav-link">03_WORK</a>
+    <a href="#skills" class="mobile-nav-link">04_STACK</a>
+    <a href="#contact" class="mobile-nav-link">05_CON</a>
+</div>
+
+<!-- ========== Navigation ========== -->
+<nav class="fixed top-0 w-full z-50 mix-blend-difference flex justify-between items-center px-margin-mobile md:px-margin-desktop py-6 md:py-8">
     <a class="font-display-xl text-primary font-bold tracking-tighter interactive text-xl md:text-2xl" href="#">Jeevan Raj M</a>
+    
+    <!-- Desktop nav links -->
     <div class="hidden md:flex items-center gap-12 font-mono-label">
         <a class="hover:text-secondary transition-colors interactive" href="#about">01_ABOUT</a>
         <a class="hover:text-secondary transition-colors interactive" href="#experience">02_EXP</a>
         <a class="hover:text-secondary transition-colors interactive" href="#projects">03_WORK</a>
         <a class="hover:text-secondary transition-colors interactive" href="#contact">04_CON</a>
     </div>
+
+    <!-- Hamburger button — mobile only -->
+    <button class="hamburger md:hidden" id="hamburger-btn" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 </nav>
-<!-- Hero Section -->
-<section class="min-h-screen asymmetric-grid relative pt-32">
-    <!-- Massive Vertical Name -->
+
+<!-- ========== Hero Section ========== -->
+<section class="min-h-screen asymmetric-grid relative pt-28 md:pt-32">
+    <!-- Massive Vertical Name (desktop only) -->
     <div class="hidden md:flex col-span-2 items-end justify-center pb-20 border-r border-primary/20">
         <h1 class="vertical-text font-display-xl text-[12vw] leading-none text-primary uppercase tracking-tighter opacity-10 select-none">
             Jeevan Raj M
@@ -185,73 +313,75 @@
     </div>
     <div class="col-span-12 md:col-span-10 px-margin-mobile md:pl-20 flex flex-col justify-center">
         <div class="reveal active">
-            <h1 class="md:hidden font-display-xl text-5xl mb-8 text-primary">Jeevan Raj M</h1>
-            <div class="mb-8">
-                <p class="font-mono-label text-secondary text-xl md:text-3xl" id="typing-container">
-                    <span class="block font-display-xl text-primary text-lg md:text-xl mb-2 opacity-80 uppercase tracking-widest">Hello, I am</span>
+            <h1 class="md:hidden font-display-xl text-4xl sm:text-5xl mb-6 text-primary">Jeevan Raj M</h1>
+            <div class="mb-6 md:mb-8">
+                <p class="font-mono-label text-secondary text-lg sm:text-xl md:text-3xl" id="typing-container">
+                    <span class="block font-display-xl text-primary text-base md:text-xl mb-2 opacity-80 uppercase tracking-widest">Hello, I am</span>
                     <span id="typing-text"></span><span class="typing-cursor">█</span>
                 </p>
             </div>
-            <p class="font-body-lg text-2xl md:text-4xl max-w-3xl mb-12 leading-tight border-l-4 border-primary pl-8 py-4">Engineering the future of AI/ML — where clinical precision meets computational intelligence.</p>
-            <div class="flex flex-wrap gap-0">
-                <a class="px-12 py-6 bg-primary text-background font-mono-label font-bold text-lg hover:bg-secondary hover:text-white transition-all interactive" href="#projects">PROJECT_DIR</a>
-                <a class="px-12 py-6 border-2 border-primary text-primary font-mono-label font-bold text-lg hover:bg-primary/10 transition-all interactive" href="Jeevan_Raj_M_AI_ML_Engineer_Resume.pdf" download="Jeevan_Raj_M_AI_ML_Engineer_Resume.pdf">RESUME.PDF</a>
+            <p class="font-body-lg text-xl sm:text-2xl md:text-4xl max-w-3xl mb-8 md:mb-12 leading-tight border-l-4 border-primary pl-6 md:pl-8 py-4">Engineering the future of AI/ML — where clinical precision meets computational intelligence.</p>
+            <div class="flex flex-col sm:flex-row gap-0">
+                <a class="px-8 sm:px-12 py-4 sm:py-6 bg-primary text-background font-mono-label font-bold text-base sm:text-lg hover:bg-secondary hover:text-white transition-all interactive text-center" href="#projects">PROJECT_DIR</a>
+                <a class="px-8 sm:px-12 py-4 sm:py-6 border-2 border-primary text-primary font-mono-label font-bold text-base sm:text-lg hover:bg-primary/10 transition-all interactive text-center" href="Jeevan_Raj_M_AI_ML_Engineer_Resume.pdf" download="Jeevan_Raj_M_AI_ML_Engineer_Resume.pdf">RESUME.PDF</a>
             </div>
         </div>
     </div>
 </section>
-<!-- About Section -->
-<section class="py-section-gap px-margin-mobile md:px-margin-desktop relative" id="about">
-    <div class="asymmetric-grid gap-y-20">
+
+<!-- ========== About Section ========== -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop relative" id="about">
+    <div class="asymmetric-grid gap-y-12 md:gap-y-20">
         <div class="col-span-12 md:col-span-4 reveal">
-            <h2 class="font-display-xl text-7xl text-secondary mb-8 underline decoration-primary underline-offset-8">ABOUT_</h2>
+            <h2 class="font-display-xl text-4xl md:text-7xl text-secondary mb-6 md:mb-8 underline decoration-primary underline-offset-8">ABOUT_</h2>
         </div>
-        <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8 reveal">
-            <div class="brutalist-card p-12 interactive">
-                <div class="font-display-xl text-6xl text-primary mb-4 counter" data-decimals="2" data-target="9.74">0.00</div>
-                <div class="font-mono-label text-secondary uppercase tracking-widest">GPA_SCORE / 10</div>
+        <div class="col-span-12 md:col-span-8 grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-8 reveal">
+            <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive">
+                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="2" data-target="9.74">0.00</div>
+                <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">GPA_SCORE / 10</div>
             </div>
-            <div class="brutalist-card p-12 interactive md:translate-y-12">
-                <div class="font-display-xl text-6xl text-primary mb-4 counter" data-decimals="0" data-target="2">0</div>
-                <div class="font-mono-label text-secondary uppercase tracking-widest">INTERNSHIPS_LOADED</div>
+            <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive md:translate-y-12">
+                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-target="2">0</div>
+                <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">INTERNSHIPS_LOADED</div>
             </div>
-            <div class="brutalist-card p-12 interactive">
-                <div class="font-display-xl text-6xl text-primary mb-4 counter" data-decimals="0" data-suffix="+" data-target="3">0+</div>
-                <div class="font-mono-label text-secondary uppercase tracking-widest">PROJECTS_DEPLOYED</div>
+            <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive">
+                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-suffix="+" data-target="3">0+</div>
+                <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">PROJECTS_DEPLOYED</div>
             </div>
-            <div class="brutalist-card p-12 interactive md:translate-y-12">
-                <div class="font-display-xl text-6xl text-primary mb-4 counter" data-decimals="0" data-target="2026">0</div>
-                <div class="font-mono-label text-secondary uppercase tracking-widest">GRAD_CYCLE</div>
+            <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive md:translate-y-12">
+                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-target="2026">0</div>
+                <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">GRAD_CYCLE</div>
             </div>
         </div>
     </div>
 </section>
-<!-- Experience Section -->
-<section class="py-section-gap px-margin-mobile md:px-margin-desktop bg-surface/30 backdrop-blur-sm" id="experience">
+
+<!-- ========== Experience Section ========== -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop bg-surface/30 backdrop-blur-sm" id="experience">
     <div class="max-w-6xl mx-auto reveal">
-        <h2 class="font-display-xl text-7xl text-primary mb-24 text-right">EXP_LOG</h2>
-        <div class="space-y-32">
+        <h2 class="font-display-xl text-4xl md:text-7xl text-primary mb-12 md:mb-24 text-right">EXP_LOG</h2>
+        <div class="space-y-16 md:space-y-32">
             <!-- Item 1 -->
-            <div class="flex flex-col md:flex-row gap-12 items-start group">
-                <div class="font-mono-label text-secondary text-2xl shrink-0">2025_OCT</div>
-                <div class="brutalist-card p-10 flex-grow hover:bg-secondary/5">
-                    <h3 class="font-display-xl text-3xl text-primary mb-2">AI Development Intern</h3>
-                    <p class="font-mono-label text-secondary/80 mb-6">Kinetrix Technologies LLP</p>
-                    <p class="text-xl mb-8 opacity-80">Focused on developing robust AI solutions involving NLP and Computer Vision.</p>
-                    <div class="flex flex-wrap gap-3">
+            <div class="flex flex-col md:flex-row gap-6 md:gap-12 items-start group">
+                <div class="font-mono-label text-secondary text-xl md:text-2xl shrink-0">2025_OCT</div>
+                <div class="brutalist-card p-6 sm:p-8 md:p-10 flex-grow hover:bg-secondary/5">
+                    <h3 class="font-display-xl text-2xl md:text-3xl text-primary mb-2">AI Development Intern</h3>
+                    <p class="font-mono-label text-secondary/80 mb-4 md:mb-6">Kinetrix Technologies LLP</p>
+                    <p class="text-base md:text-xl mb-6 md:mb-8 opacity-80">Focused on developing robust AI solutions involving NLP and Computer Vision.</p>
+                    <div class="flex flex-wrap gap-2 md:gap-3">
                         <span class="skill-badge">NLP (WHISPER)</span>
                         <span class="skill-badge">CV (YOLO)</span>
                     </div>
                 </div>
             </div>
             <!-- Item 2 -->
-            <div class="flex flex-col md:flex-row gap-12 items-start group md:flex-row-reverse">
-                <div class="font-mono-label text-secondary text-2xl shrink-0">2025_SEP</div>
-                <div class="brutalist-card p-10 flex-grow hover:bg-secondary/5 text-right">
-                    <h3 class="font-display-xl text-3xl text-primary mb-2">Data Science &amp; ML Intern</h3>
-                    <p class="font-mono-label text-secondary/80 mb-6">Infotact Solutions</p>
-                    <p class="text-xl mb-8 opacity-80">Applied data science techniques and machine learning models to analyze complex datasets.</p>
-                    <div class="flex flex-wrap gap-3 justify-end">
+            <div class="flex flex-col md:flex-row gap-6 md:gap-12 items-start group md:flex-row-reverse">
+                <div class="font-mono-label text-secondary text-xl md:text-2xl shrink-0">2025_SEP</div>
+                <div class="brutalist-card p-6 sm:p-8 md:p-10 flex-grow hover:bg-secondary/5 md:text-right">
+                    <h3 class="font-display-xl text-2xl md:text-3xl text-primary mb-2">Data Science &amp; ML Intern</h3>
+                    <p class="font-mono-label text-secondary/80 mb-4 md:mb-6">Infotact Solutions</p>
+                    <p class="text-base md:text-xl mb-6 md:mb-8 opacity-80">Applied data science techniques and machine learning models to analyze complex datasets.</p>
+                    <div class="flex flex-wrap gap-2 md:gap-3 md:justify-end">
                         <span class="skill-badge">ML_MODELS</span>
                         <span class="skill-badge">DATA_ANALYSIS</span>
                     </div>
@@ -260,70 +390,72 @@
         </div>
     </div>
 </section>
-<!-- Projects Section -->
-<section class="py-section-gap px-margin-mobile md:px-margin-desktop" id="projects">
-    <div class="mb-24 reveal">
-        <h2 class="font-display-xl text-7xl text-secondary mb-4 italic">PROJECTS.EXE</h2>
+
+<!-- ========== Projects Section ========== -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop" id="projects">
+    <div class="mb-12 md:mb-24 reveal">
+        <h2 class="font-display-xl text-4xl md:text-7xl text-secondary mb-4 italic">PROJECTS.EXE</h2>
         <p class="font-mono-label text-primary">SCANNING REPOSITORIES...</p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t-2 border-primary">
         <!-- Project 1 -->
-        <div class="p-12 border-b-2 border-r-2 border-primary/20 hover:bg-primary hover:text-background transition-all group reveal interactive">
-            <p class="font-mono-label mb-8 group-hover:text-background text-secondary">01_IN_PROGRESS</p>
-            <h3 class="font-display-xl text-4xl mb-6">AI-Integrated Healthcare Platform</h3>
-            <p class="mb-10 text-lg opacity-70 group-hover:opacity-100">Developing a comprehensive platform integrating AI for healthcare solutions.</p>
-            <span class="material-symbols-outlined text-4xl">north_east</span>
+        <div class="p-8 md:p-12 border-b-2 md:border-r-2 border-primary/20 hover:bg-primary hover:text-background transition-all group reveal interactive">
+            <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">01_IN_PROGRESS</p>
+            <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">AI-Integrated Healthcare Platform</h3>
+            <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">Developing a comprehensive platform integrating AI for healthcare solutions.</p>
+            <span class="material-symbols-outlined text-3xl md:text-4xl">north_east</span>
         </div>
         <!-- Project 2 -->
-        <div class="p-12 border-b-2 border-r-2 border-primary/20 hover:bg-secondary hover:text-white transition-all group reveal interactive">
-            <p class="font-mono-label mb-8 group-hover:text-white text-primary">02_STABLE</p>
-            <h3 class="font-display-xl text-4xl mb-6">Disaster Segmentation</h3>
-            <p class="mb-10 text-lg opacity-70 group-hover:opacity-100">Semantic segmentation of satellite imagery for disaster impact assessment.</p>
-            <a class="material-symbols-outlined text-4xl" href="https://github.com/jeevanraj-28/Disaster-segmentation" target="_blank">terminal</a>
+        <div class="p-8 md:p-12 border-b-2 md:border-r-2 border-primary/20 hover:bg-secondary hover:text-white transition-all group reveal interactive">
+            <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">02_STABLE</p>
+            <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Disaster Segmentation</h3>
+            <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">Semantic segmentation of satellite imagery for disaster impact assessment.</p>
+            <a class="material-symbols-outlined text-3xl md:text-4xl" href="https://github.com/jeevanraj-28/Disaster-segmentation" target="_blank">terminal</a>
         </div>
         <!-- Project 3 -->
-        <div class="p-12 border-b-2 border-primary/20 hover:bg-primary hover:text-background transition-all group reveal interactive">
-            <p class="font-mono-label mb-8 group-hover:text-background text-secondary">03_STABLE</p>
-            <h3 class="font-display-xl text-4xl mb-6">CafeCritic</h3>
-            <p class="mb-10 text-lg opacity-70 group-hover:opacity-100">A robust cafe recommender system utilizing machine learning algorithms.</p>
-            <a class="material-symbols-outlined text-4xl" href="https://github.com/jeevanraj-28/cafecritic-recommender" target="_blank">terminal</a>
+        <div class="p-8 md:p-12 border-b-2 border-primary/20 hover:bg-primary hover:text-background transition-all group reveal interactive">
+            <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">03_STABLE</p>
+            <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">CafeCritic</h3>
+            <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">A robust cafe recommender system utilizing machine learning algorithms.</p>
+            <a class="material-symbols-outlined text-3xl md:text-4xl" href="https://github.com/jeevanraj-28/cafecritic-recommender" target="_blank">terminal</a>
         </div>
     </div>
 </section>
-<!-- Skills Section -->
-<section class="py-section-gap px-margin-mobile md:px-margin-desktop bg-secondary/90 text-white overflow-hidden backdrop-blur-sm" id="skills">
-    <div class="reveal mb-20">
-        <h2 class="font-display-xl text-8xl md:text-[12vw] leading-none uppercase tracking-tighter">CORE_STACK</h2>
+
+<!-- ========== Skills Section ========== -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop bg-secondary/90 text-white overflow-hidden backdrop-blur-sm" id="skills">
+    <div class="reveal mb-10 md:mb-20">
+        <h2 class="font-display-xl text-5xl sm:text-6xl md:text-8xl lg:text-[12vw] leading-none uppercase tracking-tighter">CORE_STACK</h2>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="p-8 border border-white/20 reveal">
-            <h3 class="font-mono-label text-primary mb-6">_LANGUAGES</h3>
-            <div class="space-y-2 font-display-xl text-2xl uppercase">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        <div class="p-5 md:p-8 border border-white/20 reveal">
+            <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_LANGUAGES</h3>
+            <div class="space-y-2 font-display-xl text-lg md:text-2xl uppercase">
                 <p>Python</p>
                 <p>C++</p>
                 <p>SQL</p>
             </div>
         </div>
-        <div class="p-8 border border-white/20 md:mt-20 reveal">
-            <h3 class="font-mono-label text-primary mb-6">_ML/AI</h3>
-            <div class="space-y-2 font-display-xl text-2xl uppercase">
+        <div class="p-5 md:p-8 border border-white/20 md:mt-20 reveal">
+            <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_ML/AI</h3>
+            <div class="space-y-2 font-display-xl text-lg md:text-2xl uppercase">
                 <p>PyTorch</p>
                 <p>TensorFlow</p>
                 <p>NLP</p>
                 <p>CV</p>
             </div>
         </div>
-        <div class="p-8 border border-white/20 reveal">
-            <h3 class="font-mono-label text-primary mb-6">_CLOUD</h3>
-            <div class="space-y-2 font-display-xl text-2xl uppercase">
+        <div class="p-5 md:p-8 border border-white/20 reveal">
+            <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_CLOUD</h3>
+            <div class="space-y-2 font-display-xl text-lg md:text-2xl uppercase">
                 <p>AWS</p>
                 <p>Docker</p>
                 <p>FastAPI</p>
             </div>
         </div>
-        <div class="p-8 border border-white/20 md:mt-20 reveal">
-            <h3 class="font-mono-label text-primary mb-6">_TOOLS</h3>
-            <div class="space-y-2 font-display-xl text-2xl uppercase">
+        <div class="p-5 md:p-8 border border-white/20 md:mt-20 reveal">
+            <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_TOOLS</h3>
+            <div class="space-y-2 font-display-xl text-lg md:text-2xl uppercase">
                 <p>Git</p>
                 <p>Linux</p>
                 <p>Jupyter</p>
@@ -331,40 +463,68 @@
         </div>
     </div>
 </section>
-<!-- Contact Section -->
-<section class="py-section-gap px-margin-mobile md:px-margin-desktop" id="contact">
-    <div class="brutalist-card bg-primary p-12 md:p-24 text-background relative reveal overflow-hidden">
+
+<!-- ========== Contact Section ========== -->
+<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop" id="contact">
+    <div class="brutalist-card bg-primary p-8 sm:p-12 md:p-24 text-background relative reveal overflow-hidden">
         <div class="relative z-10">
-            <h2 class="font-display-xl text-6xl md:text-8xl mb-8 tracking-tighter">INITIATE_CONTACT</h2>
-            <p class="font-body-lg text-2xl mb-16 max-w-xl">Currently open for new opportunities and interesting projects.</p>
-            <div class="flex flex-wrap gap-4">
-                <a class="px-10 py-5 bg-background text-primary font-mono-label text-xl hover:bg-secondary hover:text-white transition-all interactive" href="mailto:jeevanrajm2882004@gmail.com">SEND_MAIL</a>
-                <a class="px-10 py-5 border-2 border-background text-background font-mono-label text-xl hover:bg-background hover:text-primary transition-all interactive" href="https://linkedin.com/in/jeevan-raj-m-5ba64a383" target="_blank">LINKEDIN</a>
+            <h2 class="font-display-xl text-4xl sm:text-5xl md:text-8xl mb-6 md:mb-8 tracking-tighter">INITIATE_CONTACT</h2>
+            <p class="font-body-lg text-lg sm:text-xl md:text-2xl mb-10 md:mb-16 max-w-xl">Currently open for new opportunities and interesting projects.</p>
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <a class="px-8 sm:px-10 py-4 sm:py-5 bg-background text-primary font-mono-label text-base sm:text-xl hover:bg-secondary hover:text-white transition-all interactive text-center" href="mailto:jeevanrajm2882004@gmail.com">SEND_MAIL</a>
+                <a class="px-8 sm:px-10 py-4 sm:py-5 border-2 border-background text-background font-mono-label text-base sm:text-xl hover:bg-background hover:text-primary transition-all interactive text-center" href="https://linkedin.com/in/jeevan-raj-m-5ba64a383" target="_blank">LINKEDIN</a>
             </div>
         </div>
-        <span class="absolute top-0 right-0 font-display-xl text-[20vw] opacity-10 pointer-events-none -translate-y-1/4 translate-x-1/4">@</span>
+        <span class="absolute top-0 right-0 font-display-xl text-[30vw] md:text-[20vw] opacity-10 pointer-events-none -translate-y-1/4 translate-x-1/4">@</span>
     </div>
 </section>
-<!-- Footer -->
-<footer class="py-20 px-margin-mobile md:px-margin-desktop border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-8">
-    <div class="font-mono-label text-primary">JEEVAN_RAJ_M // 2026 // ALL_RIGHTS_RESERVED</div>
-    <div class="flex gap-12 font-mono-label">
+
+<!-- ========== Footer ========== -->
+<footer class="py-12 md:py-20 px-margin-mobile md:px-margin-desktop border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8">
+    <div class="font-mono-label text-primary text-xs sm:text-sm text-center md:text-left">JEEVAN_RAJ_M // 2026 // ALL_RIGHTS_RESERVED</div>
+    <div class="flex gap-8 md:gap-12 font-mono-label">
         <a class="hover:text-secondary interactive" href="https://github.com/jeevanraj-28" target="_blank">GITHUB</a>
         <a class="hover:text-secondary interactive" href="https://linkedin.com/in/jeevan-raj-m-5ba64a383" target="_blank">LINKEDIN</a>
     </div>
 </footer>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Background Animation (Cyber-Brutalist Particle Mesh) ---
+
+        // ========== Mobile Menu Toggle ==========
+        const hamburger = document.getElementById('hamburger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('open');
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+        });
+
+        // Close menu when a link is clicked
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // ========== Background Animation (Cyber-Brutalist Particle Mesh) ==========
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
         let nodes = [];
-        const spacing = 40;
-        const mouseRadius = 150;
-        const targetX = { val: 0 };
-        const targetY = { val: 0 };
-        let isMoving = false;
+        
+        // Detect if device is mobile/touch for performance optimization
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        const spacing = isMobile ? 60 : 40; // Wider spacing on mobile = fewer particles
+        const mouseRadius = isMobile ? 100 : 150;
+        
+        const targetX = { val: -1000 };
+        const targetY = { val: -1000 };
 
         const resize = () => {
             width = canvas.width = window.innerWidth;
@@ -391,11 +551,25 @@
         window.addEventListener('resize', resize);
         resize();
 
+        // Mouse events (desktop)
         document.addEventListener('mousemove', (e) => {
             targetX.val = e.clientX;
             targetY.val = e.clientY;
-            isMoving = true;
         });
+
+        // Touch events (mobile) — animation reacts to finger position
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                targetX.val = e.touches[0].clientX;
+                targetY.val = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            // Move interaction point offscreen so particles return to origin
+            targetX.val = -1000;
+            targetY.val = -1000;
+        }, { passive: true });
 
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -421,7 +595,7 @@
                     node.vx += (tx - node.x) * 0.1;
                     node.vy += (ty - node.y) * 0.1;
                     
-                    // Increase opacity when near mouse
+                    // Increase opacity when near mouse/touch
                     ctx.globalAlpha = 0.15 + (force * 0.3);
                 } else {
                     node.vx += (node.originX - node.x) * 0.05;
@@ -434,7 +608,7 @@
                 node.x += node.vx;
                 node.y += node.vy;
 
-                // Draw small geometric nodes (plus signs or dots)
+                // Draw small geometric nodes
                 ctx.fillRect(node.x - 1, node.y - 1, 2, 2);
             });
 
@@ -445,43 +619,49 @@
             animate();
         }
 
-        // --- Custom Cursor ---
-        const cursor = document.getElementById('custom-cursor');
-        let cursorX = 0, cursorY = 0;
-        let cTargetX = 0, cTargetY = 0;
+        // ========== Custom Cursor (only on pointer devices) ==========
+        const hasPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
         
-        document.addEventListener('mousemove', (e) => {
-            cTargetX = e.clientX;
-            cTargetY = e.clientY;
-        });
+        if (hasPointer) {
+            const cursor = document.getElementById('custom-cursor');
+            let cursorX = 0, cursorY = 0;
+            let cTargetX = 0, cTargetY = 0;
+            
+            document.addEventListener('mousemove', (e) => {
+                cTargetX = e.clientX;
+                cTargetY = e.clientY;
+            });
 
-        function animateCursor() {
-            cursorX += (cTargetX - cursorX) * 0.2;
-            cursorY += (cTargetY - cursorY) * 0.2;
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-            requestAnimationFrame(animateCursor);
+            function animateCursor() {
+                cursorX += (cTargetX - cursorX) * 0.2;
+                cursorY += (cTargetY - cursorY) * 0.2;
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            const interactives = document.querySelectorAll('.interactive, button, a, .brutalist-card');
+            interactives.forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('cursor-expand'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-expand'));
+            });
         }
-        animateCursor();
 
-        const interactives = document.querySelectorAll('.interactive, button, a, .brutalist-card');
-        interactives.forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-expand'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-expand'));
-        });
+        // ========== Glitch Shape scroll reaction (desktop only) ==========
+        if (!isMobile) {
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const s1 = document.getElementById('shape-1');
+                const s2 = document.getElementById('shape-2');
+                const s3 = document.getElementById('shape-3');
+                if(s1) s1.style.transform = `rotate(${45 + scrolled * 0.1}deg) translateY(${scrolled * 0.05}px)`;
+                if(s2) s2.style.transform = `rotate(${-12 - scrolled * 0.05}deg) translateX(${scrolled * 0.1}px)`;
+                if(s3) s3.style.transform = `scale(${1 + scrolled * 0.001}) rotate(${scrolled * 0.02}deg)`;
+            });
+        }
 
-        // --- Glitch Shape scroll reaction ---
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const s1 = document.getElementById('shape-1');
-            const s2 = document.getElementById('shape-2');
-            const s3 = document.getElementById('shape-3');
-            if(s1) s1.style.transform = `rotate(${45 + scrolled * 0.1}deg) translateY(${scrolled * 0.05}px)`;
-            if(s2) s2.style.transform = `rotate(${-12 - scrolled * 0.05}deg) translateX(${scrolled * 0.1}px)`;
-            if(s3) s3.style.transform = `scale(${1 + scrolled * 0.001}) rotate(${scrolled * 0.02}deg)`;
-        });
-
-        // --- Typing Effect ---
+        // ========== Typing Effect ==========
         const roles = [
             'AI/ML_ENGINEER',
             'DEEP_LEARNING_DEV',
@@ -513,7 +693,7 @@
         }
         typeEffect();
 
-        // --- Intersection Observer for Reveal & Counters ---
+        // ========== Intersection Observer for Reveal & Counters ==========
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -547,7 +727,7 @@
         }
     });
 
-    // --- Service Worker Registration ---
+    // ========== Service Worker Registration ==========
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')

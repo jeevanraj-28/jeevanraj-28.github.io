@@ -345,7 +345,7 @@
                 <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">INTERNSHIPS_LOADED</div>
             </div>
             <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive">
-                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-suffix="+" data-target="4">0+</div>
+                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-suffix="+" data-target="3">0+</div>
                 <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">PROJECTS_DEPLOYED</div>
             </div>
             <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive md:translate-y-12">
@@ -397,54 +397,29 @@
         <h2 class="font-display-xl text-4xl md:text-7xl text-secondary mb-4 italic">PROJECTS.EXE</h2>
         <p class="font-mono-label text-primary">SCANNING REPOSITORIES...</p>
     </div>
-    <div class="border-t-2 border-primary reveal">
-        <div class="relative overflow-hidden">
-            <div class="flex transition-transform duration-500 ease-out" id="projects-track" style="will-change: transform;">
-        <!-- Slide 1: Healthcare (in-progress) -->
-                <div class="w-full shrink-0 p-8 md:p-12 hover:bg-primary hover:text-background transition-all group interactive">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t-2 border-primary">
+        <!-- Project 1 -->
+        <div class="p-8 md:p-12 border-b-2 md:border-r-2 border-primary/20 hover:bg-primary hover:text-background transition-all group reveal interactive">
             <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">01_IN_PROGRESS</p>
             <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">AI-Integrated Healthcare Platform</h3>
             <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">Developing a comprehensive platform integrating AI for healthcare solutions.</p>
             <span class="material-symbols-outlined text-3xl md:text-4xl">north_east</span>
         </div>
-        <!-- Slide 2: Disaster -->
-                <div class="w-full shrink-0 p-8 md:p-12 hover:bg-secondary hover:text-white transition-all group interactive">
+        <!-- Project 2 -->
+        <div class="p-8 md:p-12 border-b-2 md:border-r-2 border-primary/20 hover:bg-secondary hover:text-white transition-all group reveal interactive">
             <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">02_STABLE</p>
             <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Disaster Segmentation</h3>
             <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">Semantic segmentation of satellite imagery for disaster impact assessment.</p>
             <a class="material-symbols-outlined text-3xl md:text-4xl" href="https://github.com/jeevanraj-28/Disaster-segmentation" target="_blank">terminal</a>
-       </div>
-        <!-- Slide 3: Lumina RAG -->
-                <div class="w-full shrink-0 p-8 md:p-12 hover:bg-primary hover:text-background transition-all group interactive">
-                    <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">03_STABLE</p>
-                    <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Lumina RAG Assistant</h3>
-                    <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">A private, local-first document intelligence assistant powered by Ollama, FAISS, and Qwen 2.5 — fully offline</p>
-                    <a class="material-symbols-outlined text-3xl md:text-4xl" href="https://github.com/jeevanraj-28/lumina-rag-assistant" target="_blank">terminal</a>
-       </div>
-        <!-- Slide 4: CafeCritic -->
-                <div class="w-full shrink-0 p-8 md:p-12 hover:bg-secondary hover:text-white transition-all group interactive">
-                    <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">04_STABLE</p>
-                    <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">CafeCritic</h3>
+        </div>
+        <!-- Project 3 -->
+        <div class="p-8 md:p-12 border-b-2 border-primary/20 hover:bg-primary hover:text-background transition-all group reveal interactive">
+            <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">03_STABLE</p>
+            <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">CafeCritic</h3>
             <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">A robust cafe recommender system utilizing machine learning algorithms.</p>
             <a class="material-symbols-outlined text-3xl md:text-4xl" href="https://github.com/jeevanraj-28/cafecritic-recommender" target="_blank">terminal</a>
-      </div>
-          </div>
-            <!-- Arrows -->
-            <button id="proj-prev" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 border-2 border-primary text-primary bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-background transition-all interactive flex items-center justify-center z-10" aria-label="Previous project">
-                <span class="material-symbols-outlined">arrow_back</span>
-      </button>
-            <button id="proj-next" class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 border-2 border-primary text-primary bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-background transition-all interactive flex items-center justify-center z-10" aria-label="Next project">
-                <span class="material-symbols-outlined">arrow_forward</span>
-      </button>
-      </div>
-        <!-- Dots -->
-        <div class="flex justify-center gap-3 pt-8 pb-2" id="proj-dots">
-            <button class="proj-dot w-3 h-3 border-2 border-primary bg-transparent transition-all interactive" data-index="0" aria-label="Go to project 1</button>
-            <button class="proj-dot w-3 h-3 border-2 border-primary bg-transparent transition-all interactive" data-index="1" aria-label="Go to project 2</button>
-            <button class="proj-dot w-3 h-3 border-2 border-primary bg-transparent transition-all interactive" data-index="2" aria-label="Go to project 3</button>
-            <button class="proj-dot w-3 h-3 border-2 border-primary bg-transparent transition-all interactive" data-index="3" aria-label="Go to project 4</button>
-      </div>
-  </div>
+        </div>
+    </div>
 </section>
 
 <!-- ========== Skills Section ========== -->
@@ -749,55 +724,6 @@
                 if (progress < 1) requestAnimationFrame(update);
             }
             requestAnimationFrame(update);
-        }
-
-        // ========== Projects Carousel ==========
-        const projTrack = document.getElementById('projects-track');
-        const projDots = document.querySelectorAll('.proj-dot');
-        const projPrev = document.getElementById('proj-prev');
-        const projNext = document.getElementById('proj-next');
-        if (projTrack && projDots.length) {
-            const projTotal = projTrack.children.length;
-            let projIndex = 0;
-
-            function goToProj(i) {
-                projIndex = ((i % projTotal) + projTotal) % projTotal;
-                projTrack.style.transform = `translateX(-${projIndex * 100}%)`;
-                projDots.forEach((d, di) => {
-                    const active = di === projIndex;
-                    d.classList.toggle('bg-primary', active);
-                    d.classList.toggle('scale-125', active);
-                });
-            }
-
-            projPrev.addEventListener('click', () => goToProj(projIndex - 1));
-            projNext.addEventListener('click', () => goToProj(projIndex + 1));
-            projDots.forEach(dot => {
-                dot.addEventListener('click', () => goToProj(parseInt(dot.dataset.index, 10)));
-            });
-
-            // Keyboard arrow navigation (only when not typing in an input)
-            document.addEventListener('keydown', (e) => {
-                const tag = (e.target && e.target.tagName) || '';
-                if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
-                if (e.key === 'ArrowLeft')  { e.preventDefault(); goToProj(projIndex - 1); }
-                if (e.key === 'ArrowRight') { e.preventDefault(); goToProj(projIndex + 1); }
-            });
-
-            // Touch swipe support
-            let projTouchStartX = 0;
-            projTrack.addEventListener('touchstart', (e) => {
-                projTouchStartX = e.touches[0].clientX;
-            }, { passive: true });
-            projTrack.addEventListener('touchend', (e) => {
-                const diff = projTouchStartX - e.changedTouches[0].clientX;
-                if (Math.abs(diff) > 50) {
-                    if (diff > 0) goToProj(projIndex + 1);
-                    else goToProj(projIndex - 1);
-                }
-            }, { passive: true });
-
-            goToProj(0);
         }
     });
 

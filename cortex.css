@@ -1,0 +1,650 @@
+/* ================================================
+   CORTEX AI COMPANION — Styles
+   A tiny intelligent process for the portfolio OS
+   ================================================ */
+
+/* ============================================
+   CONTAINER & POSITIONING
+   ============================================ */
+
+.cortex-container {
+    position: fixed;
+    z-index: 45;
+    pointer-events: none;
+    /* Smooth glide between section anchor points */
+    transition: top 0.95s cubic-bezier(0.23, 1, 0.32, 1),
+                left 0.95s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.cortex-container.cortex-hidden {
+    display: none;
+}
+
+.cortex-robot-wrapper {
+    position: relative;
+    pointer-events: auto;
+    width: 64px;
+    height: 68px;
+}
+
+/* ============================================
+   ENTRANCE ANIMATION
+   ============================================ */
+
+.cortex-spark {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #8B5CF6;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: cortex-spark-burst 0.6s ease-out forwards;
+    box-shadow: 0 0 15px #8B5CF6, 0 0 30px rgba(139, 92, 246, 0.4);
+    pointer-events: none;
+}
+
+@keyframes cortex-spark-burst {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    50%  { transform: translate(-50%, -50%) scale(4); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+}
+
+.cortex-robot-svg {
+    opacity: 0;
+    transform: scale(0.3);
+    transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 0 6px rgba(177, 255, 214, 0.25));
+    display: block;
+}
+
+.cortex-robot-svg.cortex-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ============================================
+   FLOATING ANIMATION
+   ============================================ */
+
+.cortex-robot-wrapper.cortex-floating {
+    animation: cortex-float 3s ease-in-out infinite;
+}
+
+.cortex-robot-wrapper.cortex-sleeping-float {
+    animation: cortex-float-slow 6s ease-in-out infinite;
+}
+
+@keyframes cortex-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+}
+
+@keyframes cortex-float-slow {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-3px); }
+}
+
+/* ============================================
+   ROBOT SVG PARTS
+   ============================================ */
+
+.cortex-antenna-tip {
+    animation: cortex-antenna-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes cortex-antenna-pulse {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+}
+
+.cortex-flame {
+    animation: cortex-flame-flicker 0.3s steps(2) infinite;
+}
+
+@keyframes cortex-flame-flicker {
+    0%   { opacity: 0.4; }
+    50%  { opacity: 0.85; }
+    100% { opacity: 0.5; }
+}
+
+.cortex-pupil {
+    transition: transform 0.15s ease-out;
+}
+
+.cortex-head-group {
+    transition: transform 0.3s ease-out;
+    transform-origin: 16px 12px;
+}
+
+/* Blink — pupils squeeze vertically */
+.cortex-robot-svg.cortex-blink .cortex-pupil {
+    transition: transform 0.08s ease-in;
+    transform: scaleY(0.1);
+}
+
+/* Sleep — eyes mostly closed, slower flame/antenna */
+.cortex-robot-svg.cortex-sleeping .cortex-pupil {
+    transform: scaleY(0.05);
+    transition: transform 0.5s ease;
+}
+
+.cortex-robot-svg.cortex-sleeping .cortex-flame {
+    animation-duration: 1.2s;
+    opacity: 0.25;
+}
+
+.cortex-robot-svg.cortex-sleeping .cortex-antenna-tip {
+    animation-duration: 5s;
+}
+
+/* ============================================
+   SPEECH BUBBLE
+   ============================================ */
+
+.cortex-speech {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: -4px;
+    background: rgba(14, 21, 19, 0.94);
+    border: 1px solid #B1FFD6;
+    padding: 7px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #B1FFD6;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px) scale(0.95);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 3px 3px 0px #8B5CF6;
+    z-index: 2;
+}
+
+.cortex-speech.cortex-speech-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.cortex-speech::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 18px;
+    width: 7px;
+    height: 7px;
+    background: rgba(14, 21, 19, 0.94);
+    border-right: 1px solid #B1FFD6;
+    border-bottom: 1px solid #B1FFD6;
+    transform: rotate(45deg);
+}
+
+/* ============================================
+   PARTICLES
+   ============================================ */
+
+.cortex-particle-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.cortex-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #8B5CF6;
+    pointer-events: none;
+    animation: cortex-particle-drift 2s ease-out forwards;
+}
+
+@keyframes cortex-particle-drift {
+    0% {
+        opacity: 0.8;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--cx-px, 15px), var(--cx-py, -25px)) scale(0.2);
+    }
+}
+
+/* ============================================
+   NOTIFICATIONS (System / Achievements)
+   ============================================ */
+
+.cortex-notifications {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 46;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.cortex-notification {
+    background: rgba(14, 21, 19, 0.95);
+    border: 1px solid #8B5CF6;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 4px 4px 0px #8B5CF6;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: auto;
+    max-width: 260px;
+}
+
+.cortex-notification.cortex-notification-visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.cortex-notification-title {
+    color: #8B5CF6;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 3px;
+}
+
+.cortex-notification-body {
+    color: #B1FFD6;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.cortex-notification-desc {
+    color: #889990;
+    font-size: 10px;
+    margin-top: 2px;
+}
+
+/* ============================================
+   TOUR PROMPT
+   ============================================ */
+
+.cortex-tour-prompt {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: -4px;
+    background: rgba(14, 21, 19, 0.95);
+    border: 1px solid #B1FFD6;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #B1FFD6;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 3px 3px 0px #8B5CF6;
+    white-space: nowrap;
+    z-index: 3;
+}
+
+.cortex-tour-prompt.cortex-tour-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cortex-tour-prompt p {
+    margin: 0 0 8px 0;
+}
+
+.cortex-tour-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.cortex-tour-btn {
+    padding: 3px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    border: 1px solid #B1FFD6;
+    background: transparent;
+    color: #B1FFD6;
+    transition: background 0.2s, color 0.2s;
+}
+
+.cortex-tour-btn:hover,
+.cortex-tour-btn:focus-visible {
+    background: #B1FFD6;
+    color: #0e1513;
+    outline: none;
+}
+
+.cortex-tour-btn-skip {
+    border-color: #889990;
+    color: #889990;
+}
+
+.cortex-tour-btn-skip:hover,
+.cortex-tour-btn-skip:focus-visible {
+    background: #889990;
+    color: #0e1513;
+}
+
+/* ============================================
+   DEVELOPER TERMINAL
+   ============================================ */
+
+.cortex-terminal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(5, 5, 5, 0.92);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.cortex-terminal-overlay.cortex-terminal-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cortex-terminal {
+    width: min(780px, 92vw);
+    max-height: min(480px, 72vh);
+    background: #0a0a0a;
+    border: 2px solid #B1FFD6;
+    box-shadow: 8px 8px 0px #8B5CF6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #B1FFD6;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.96) translateY(16px);
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.cortex-terminal-overlay.cortex-terminal-open .cortex-terminal {
+    transform: scale(1) translateY(0);
+}
+
+.cortex-terminal-header {
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(177, 255, 214, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(177, 255, 214, 0.03);
+    flex-shrink: 0;
+}
+
+.cortex-terminal-title {
+    font-size: 10px;
+    color: #8B5CF6;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.cortex-terminal-close {
+    background: none;
+    border: 1px solid #889990;
+    color: #889990;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.cortex-terminal-close:hover,
+.cortex-terminal-close:focus-visible {
+    border-color: #B1FFD6;
+    color: #B1FFD6;
+    outline: none;
+}
+
+.cortex-terminal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.cortex-terminal-output {
+    flex: 1;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.6;
+    font-size: 12px;
+}
+
+.cortex-terminal-output .cx-prompt {
+    color: #8B5CF6;
+}
+
+.cortex-terminal-output .cx-response {
+    color: #B1FFD6;
+}
+
+.cortex-terminal-output .cx-dim {
+    color: #889990;
+}
+
+.cortex-terminal-output .cx-accent {
+    color: #8B5CF6;
+}
+
+.cortex-terminal-output .cx-error {
+    color: #ef4444;
+}
+
+.cortex-terminal-input-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    flex-shrink: 0;
+}
+
+.cortex-terminal-prompt-label {
+    color: #8B5CF6;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.cortex-terminal-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #B1FFD6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    flex: 1;
+    caret-color: #B1FFD6;
+    min-width: 0;
+}
+
+/* ============================================
+   ROBOT GESTURES
+   ============================================ */
+
+.cortex-robot-svg.cortex-wave .cortex-arm-right {
+    animation: cortex-wave-anim 0.6s ease-in-out;
+    transform-origin: 23px 21px;
+}
+
+@keyframes cortex-wave-anim {
+    0%, 100% { transform: rotate(0deg); }
+    25%      { transform: rotate(-35deg); }
+    50%      { transform: rotate(-15deg); }
+    75%      { transform: rotate(-30deg); }
+}
+
+.cortex-robot-svg.cortex-salute .cortex-arm-left {
+    animation: cortex-salute-anim 1s ease-in-out;
+    transform-origin: 9px 21px;
+}
+
+@keyframes cortex-salute-anim {
+    0%, 100% { transform: rotate(0deg) translateY(0); }
+    20%      { transform: rotate(50deg) translateY(-3px); }
+    80%      { transform: rotate(50deg) translateY(-3px); }
+}
+
+.cortex-robot-svg.cortex-pointing .cortex-arm-right {
+    animation: cortex-point-anim 0.5s ease-out forwards;
+    transform-origin: 23px 21px;
+}
+
+@keyframes cortex-point-anim {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(-50deg) translateX(2px); }
+}
+
+.cortex-robot-svg.cortex-spin-anim {
+    animation: cortex-spin-once 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes cortex-spin-once {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* Float higher momentarily */
+.cortex-robot-wrapper.cortex-float-higher {
+    animation: cortex-float-high 1.5s ease-in-out;
+}
+
+@keyframes cortex-float-high {
+    0%, 100% { transform: translateY(0); }
+    40%      { transform: translateY(-20px); }
+}
+
+/* Scan line across eyes */
+.cortex-screen-overlay {
+    opacity: 0;
+}
+
+.cortex-robot-svg.cortex-scanning .cortex-screen-overlay {
+    animation: cortex-scan-sweep 1s linear;
+}
+
+@keyframes cortex-scan-sweep {
+    0%   { opacity: 0.6; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(7px); }
+}
+
+/* ============================================
+   MINI HOVER ICONS
+   ============================================ */
+
+.cortex-mini-icon {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-family: 'Material Symbols Outlined';
+    font-size: 14px;
+    color: #B1FFD6;
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 0.25s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.cortex-mini-icon.cortex-icon-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .cortex-robot-svg,
+    .cortex-robot-wrapper,
+    .cortex-robot-wrapper.cortex-floating,
+    .cortex-robot-wrapper.cortex-sleeping-float,
+    .cortex-robot-wrapper.cortex-float-higher,
+    .cortex-robot-svg.cortex-spin-anim,
+    .cortex-spark,
+    .cortex-particle,
+    .cortex-flame,
+    .cortex-antenna-tip {
+        animation: none !important;
+    }
+
+    .cortex-robot-svg {
+        transition: opacity 0.1s !important;
+        transform: none !important;
+    }
+
+    .cortex-robot-svg.cortex-visible {
+        opacity: 1;
+        transform: none !important;
+    }
+
+    .cortex-pupil {
+        transition: none !important;
+    }
+
+    .cortex-head-group {
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .cortex-speech,
+    .cortex-notification,
+    .cortex-tour-prompt {
+        transition: opacity 0.15s !important;
+        transform: none !important;
+    }
+
+    .cortex-speech.cortex-speech-visible,
+    .cortex-notification.cortex-notification-visible,
+    .cortex-tour-prompt.cortex-tour-visible {
+        transform: none !important;
+    }
+}
+
+/* ============================================
+   MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .cortex-container {
+        transform: scale(0.8);
+        transform-origin: top left;
+    }
+
+    .cortex-speech,
+    .cortex-tour-prompt {
+        font-size: 10px;
+        max-width: 180px;
+        white-space: normal;
+    }
+
+    .cortex-terminal {
+        width: 96vw;
+        max-height: 55vh;
+        font-size: 11px;
+    }
+
+    .cortex-notifications {
+        right: 10px;
+        top: 70px;
+    }
+
+    .cortex-notification {
+        max-width: 220px;
+        font-size: 10px;
+    }
+}

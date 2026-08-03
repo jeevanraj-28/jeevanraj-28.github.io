@@ -262,9 +262,55 @@
             background: linear-gradient(to bottom, transparent, #B1FFD6, transparent);
             opacity: 0.15;
         }
+
+        /* Scroll Progress Bar */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: #B1FFD6;
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px #B1FFD6;
+        }
+
+        /* Infinite Marquee */
+        .marquee-container {
+            overflow: hidden;
+            user-select: none;
+            display: flex;
+            width: 100%;
+        }
+
+        .marquee-content {
+            display: flex;
+            flex-shrink: 0;
+            min-width: 100%;
+            animation: scroll-marquee 60s linear infinite;
+        }
+
+        .marquee-container:hover .marquee-content {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll-marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* Reduced Motion: disable marquee */
+        @media (prefers-reduced-motion: reduce) {
+            .marquee-content {
+                animation: none !important;
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 <body class="text-on-background font-body-md overflow-x-hidden selection:bg-secondary selection:text-white">
+<div id="scroll-progress"></div>
 <canvas id="bg-canvas"></canvas>
 
 <!-- Glitch Shapes — hidden on mobile to prevent overflow -->
@@ -345,7 +391,7 @@
                 <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">INTERNSHIPS_LOADED</div>
             </div>
             <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive">
-                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-suffix="+" data-target="3">0+</div>
+                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-suffix="+" data-target="4">0+</div>
                 <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">PROJECTS_DEPLOYED</div>
             </div>
             <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive md:translate-y-12">
@@ -392,32 +438,96 @@
 </section>
 
 <!-- ========== Projects Section ========== -->
-<section class="py-section-gap-mobile md:py-section-gap px-margin-mobile md:px-margin-desktop" id="projects">
-    <div class="mb-12 md:mb-24 reveal">
+<section class="py-section-gap-mobile md:py-section-gap overflow-hidden" id="projects">
+    <div class="px-margin-mobile md:px-margin-desktop mb-8 md:mb-12 reveal">
         <h2 class="font-display-xl text-4xl md:text-7xl text-secondary mb-4 italic">PROJECTS.EXE</h2>
-        <p class="font-mono-label text-primary">SCANNING REPOSITORIES...</p>
+        <div class="flex justify-between items-end">
+            <p class="font-mono-label text-primary">SCANNING REPOSITORIES...</p>
+            <div class="hidden md:flex gap-4 font-mono-label text-primary/40 text-xs">
+                <span>[ AUTO_SCROLL_ENABLED ]</span>
+                <span class="material-symbols-outlined text-sm animate-pulse">sync</span>
+            </div>
+        </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t-2 border-primary">
-        <!-- Project 1 -->
-        <div class="p-8 md:p-12 border-b-2 md:border-r-2 border-primary/20 hover:bg-primary hover:text-background transition-all group reveal interactive">
-            <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">01_IN_PROGRESS</p>
-            <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">AI-Integrated Healthcare Platform</h3>
-            <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">Developing a comprehensive platform integrating AI for healthcare solutions.</p>
-            <span class="material-symbols-outlined text-3xl md:text-4xl">north_east</span>
-        </div>
-        <!-- Project 2 -->
-        <div class="p-8 md:p-12 border-b-2 md:border-r-2 border-primary/20 hover:bg-secondary hover:text-white transition-all group reveal interactive">
-            <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">02_STABLE</p>
-            <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Disaster Segmentation</h3>
-            <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">Semantic segmentation of satellite imagery for disaster impact assessment.</p>
-            <a class="material-symbols-outlined text-3xl md:text-4xl" href="https://github.com/jeevanraj-28/Disaster-segmentation" target="_blank">terminal</a>
-        </div>
-        <!-- Project 3 -->
-        <div class="p-8 md:p-12 border-b-2 border-primary/20 hover:bg-primary hover:text-background transition-all group reveal interactive">
-            <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">03_STABLE</p>
-            <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">CafeCritic</h3>
-            <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100">A robust cafe recommender system utilizing machine learning algorithms.</p>
-            <a class="material-symbols-outlined text-3xl md:text-4xl" href="https://github.com/jeevanraj-28/cafecritic-recommender" target="_blank">terminal</a>
+    <div class="marquee-container border-y-2 border-primary/20 bg-surface/10 py-4">
+        <div class="marquee-content flex">
+            <!-- Project 1: Lumina RAG Assistant -->
+            <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-secondary hover:text-white hover:brightness-110 transition-all duration-500 group interactive">
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">01_FEATURED_STABLE</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Lumina RAG Assistant</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">A fully private, local-first document intelligence assistant powered by Ollama, FAISS, and dynamic multi-model selection. Features metadata-aware evidence context and a multi-tier OCR pipeline.</p>
+                <div class="flex justify-between items-center">
+                    <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/lumina-rag-assistant" target="_blank">terminal</a>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">LLM_ORCHESTRATOR</span>
+                </div>
+            </div>
+            <!-- Project 2: AI Healthcare Platform -->
+            <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-primary hover:text-background hover:brightness-110 transition-all duration-500 group interactive">
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">02_IN_PROGRESS</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">AI Healthcare Platform</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Developing a comprehensive platform integrating AI for healthcare solutions, focusing on diagnostics and predictive patient analytics.</p>
+                <div class="flex justify-between items-center">
+                    <span class="material-symbols-outlined text-3xl md:text-4xl transition-transform group-hover:translate-x-2 group-hover:-translate-y-2">north_east</span>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">HEALTH_TECH</span>
+                </div>
+            </div>
+            <!-- Project 3: Disaster Segmentation -->
+            <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-secondary hover:text-white hover:brightness-110 transition-all duration-500 group interactive">
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">03_STABLE</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Disaster Segmentation</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Semantic segmentation of satellite imagery for disaster impact assessment using advanced computer vision architectures.</p>
+                <div class="flex justify-between items-center">
+                    <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/Disaster-segmentation" target="_blank">terminal</a>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">COMPUTER_VISION</span>
+                </div>
+            </div>
+            <!-- Project 4: CafeCritic -->
+            <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-primary hover:text-background hover:brightness-110 transition-all duration-500 group interactive">
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">04_STABLE</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">CafeCritic</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">A robust cafe recommender system utilizing machine learning algorithms and collaborative filtering for personalized experiences.</p>
+                <div class="flex justify-between items-center">
+                    <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/cafecritic-recommender" target="_blank">terminal</a>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">RECOMMENDER_SYS</span>
+                </div>
+            </div>
+            <!-- Duplicate set for seamless infinite loop -->
+            <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-secondary hover:text-white hover:brightness-110 transition-all duration-500 group interactive">
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">01_FEATURED_STABLE</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Lumina RAG Assistant</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">A fully private, local-first document intelligence assistant powered by Ollama, FAISS, and dynamic multi-model selection.</p>
+                <div class="flex justify-between items-center">
+                    <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/lumina-rag-assistant" target="_blank">terminal</a>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">LLM_ORCHESTRATOR</span>
+                </div>
+            </div>
+            <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-primary hover:text-background hover:brightness-110 transition-all duration-500 group interactive">
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">02_IN_PROGRESS</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">AI Healthcare Platform</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Developing a comprehensive platform integrating AI for healthcare solutions.</p>
+                <div class="flex justify-between items-center">
+                    <span class="material-symbols-outlined text-3xl md:text-4xl transition-transform group-hover:translate-x-2 group-hover:-translate-y-2">north_east</span>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">HEALTH_TECH</span>
+                </div>
+            </div>
+            <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-secondary hover:text-white hover:brightness-110 transition-all duration-500 group interactive">
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">03_STABLE</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Disaster Segmentation</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Semantic segmentation of satellite imagery for disaster impact assessment.</p>
+                <div class="flex justify-between items-center">
+                    <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/Disaster-segmentation" target="_blank">terminal</a>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">COMPUTER_VISION</span>
+                </div>
+            </div>
+            <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-primary hover:text-background hover:brightness-110 transition-all duration-500 group interactive">
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">04_STABLE</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">CafeCritic</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">A robust cafe recommender system utilizing machine learning algorithms.</p>
+                <div class="flex justify-between items-center">
+                    <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/cafecritic-recommender" target="_blank">terminal</a>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">RECOMMENDER_SYS</span>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -660,6 +770,14 @@
                 if(s3) s3.style.transform = `scale(${1 + scrolled * 0.001}) rotate(${scrolled * 0.02}deg)`;
             });
         }
+
+        // ========== Scroll Progress Bar ==========
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / docHeight) * 100;
+            document.getElementById('scroll-progress').style.width = scrolled + '%';
+        });
 
         // ========== Typing Effect ==========
         const roles = [

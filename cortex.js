@@ -813,9 +813,9 @@
                         '  ┌───────────────────────────────┐\n' +
                         '  │  Jeevan Raj M                 │\n' +
                         '  │  AI/ML Engineer                │\n' +
-                        '  │  Final Year @ Mysore Uni       │\n' +
+                        '  │  B.E. AI & DS, Mysore Uni      │\n' +
                         '  │  Focus: DL · NLP · CV          │\n' +
-                        '  │  GPA: 9.74 / 10                │\n' +
+                        '  │  CGPA: 9 / 10                  │\n' +
                         '  └───────────────────────────────┘\n'
                     };
                 case 'projects':
@@ -824,29 +824,29 @@
                         '  │  01 ▸ Lumina RAG Assistant    [★]  │\n' +
                         '  │      Private document AI           │\n' +
                         '  │                                    │\n' +
-                        '  │  02 ▸ AI Healthcare Platform  [⚡] │\n' +
-                        '  │      Diagnostics & analytics       │\n' +
+                        '  │  02 ▸ Clinical NLP Demo       [✓]  │\n' +
+                        '  │      Notes to structured fields    │\n' +
                         '  │                                    │\n' +
                         '  │  03 ▸ Disaster Segmentation   [✓]  │\n' +
-                        '  │      Satellite CV assessment       │\n' +
+                        '  │      Drone-image flood mapping     │\n' +
                         '  │                                    │\n' +
                         '  │  04 ▸ CafeCritic              [✓]  │\n' +
-                        '  │      ML recommender system         │\n' +
+                        '  │      Content + rating recommender  │\n' +
                         '  └────────────────────────────────────┘\n'
                     };
                 case 'skills':
                     return { text:
-                        '  _LANGUAGES    Python · C++ · SQL\n' +
-                        '  _ML/AI        PyTorch · TensorFlow · NLP · CV\n' +
-                        '  _CLOUD        AWS · Docker · FastAPI\n' +
-                        '  _TOOLS        Git · Linux · Jupyter\n'
+                        '  _LANGUAGES    Python · SQL\n' +
+                        '  _ML/AI        PyTorch · Scikit-learn · Hugging Face · OpenCV\n' +
+                        '  _LLM/RAG      RAG · FAISS · Ollama · Embeddings\n' +
+                        '  _SERVING      FastAPI · Docker · Celery · Git\n'
                     };
                 case 'resume':
                     return {
                         text: '  Exporting resume...\n  Opening in new tab.\n',
                         action: () => {
                             Memory.update(d => { d.downloadedResume = true; });
-                            setTimeout(() => window.open('resume.pdf', '_blank'), 500);
+                            setTimeout(() => window.open('Jeevan_Raj_M_AI_ML_Engineer_Resume.pdf', '_blank'), 500);
                         }
                     };
                 case 'github':

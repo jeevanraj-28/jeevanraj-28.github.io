@@ -383,16 +383,16 @@
         </div>
         <div class="col-span-12 md:col-span-8 grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-8 reveal">
             <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive">
-                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="2" data-target="9.74">0.00</div>
-                <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">GPA_SCORE / 10</div>
+                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-target="9">0</div>
+                <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">CGPA / 10</div>
             </div>
             <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive md:translate-y-12">
                 <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-target="2">0</div>
                 <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">INTERNSHIPS_LOADED</div>
             </div>
             <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive">
-                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-suffix="+" data-target="4">0+</div>
-                <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">PROJECTS_DEPLOYED</div>
+                <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-target="4">0</div>
+                <div class="font-mono-label text-secondary uppercase tracking-widest text-xs sm:text-sm">PUBLIC_PROJECTS</div>
             </div>
             <div class="brutalist-card p-6 sm:p-8 md:p-12 interactive md:translate-y-12">
                 <div class="font-display-xl text-4xl md:text-6xl text-primary mb-4 counter" data-decimals="0" data-target="2026">0</div>
@@ -409,24 +409,25 @@
         <div class="space-y-16 md:space-y-32">
             <!-- Item 1 -->
             <div class="flex flex-col md:flex-row gap-6 md:gap-12 items-start group">
-                <div class="font-mono-label text-secondary text-xl md:text-2xl shrink-0">2025_OCT</div>
+                <div class="font-mono-label text-secondary text-xl md:text-2xl shrink-0">2025_OCT – 2026_MAY</div>
                 <div class="brutalist-card p-6 sm:p-8 md:p-10 flex-grow hover:bg-secondary/5">
                     <h3 class="font-display-xl text-2xl md:text-3xl text-primary mb-2">AI Development Intern</h3>
                     <p class="font-mono-label text-secondary/80 mb-4 md:mb-6">Kinetrix Technologies LLP</p>
-                    <p class="text-base md:text-xl mb-6 md:mb-8 opacity-80">Focused on developing robust AI solutions involving NLP and Computer Vision.</p>
+                    <p class="text-base md:text-xl mb-6 md:mb-8 opacity-80">Built clinical speech-to-text (Whisper, BERT) and radiology image analysis (YOLO, ResNet) modules for CARE, an open-source healthcare platform, served through a FastAPI backend secured with OAuth2, JWT and RBAC, with inference on Celery workers.</p>
                     <div class="flex flex-wrap gap-2 md:gap-3">
                         <span class="skill-badge">NLP (WHISPER)</span>
-                        <span class="skill-badge">CV (YOLO)</span>
+                        <span class="skill-badge">CV (YOLO, RESNET)</span>
+                        <span class="skill-badge">FASTAPI</span>
                     </div>
                 </div>
             </div>
             <!-- Item 2 -->
             <div class="flex flex-col md:flex-row gap-6 md:gap-12 items-start group md:flex-row-reverse">
-                <div class="font-mono-label text-secondary text-xl md:text-2xl shrink-0">2025_SEP</div>
+                <div class="font-mono-label text-secondary text-xl md:text-2xl shrink-0">2025_SEP – 2025_NOV</div>
                 <div class="brutalist-card p-6 sm:p-8 md:p-10 flex-grow hover:bg-secondary/5 md:text-right">
                     <h3 class="font-display-xl text-2xl md:text-3xl text-primary mb-2">Data Science &amp; ML Intern</h3>
-                    <p class="font-mono-label text-secondary/80 mb-4 md:mb-6">Infotact Solutions</p>
-                    <p class="text-base md:text-xl mb-6 md:mb-8 opacity-80">Applied data science techniques and machine learning models to analyze complex datasets.</p>
+                    <p class="font-mono-label text-secondary/80 mb-4 md:mb-6">Infotact Solutions (Virtual)</p>
+                    <p class="text-base md:text-xl mb-6 md:mb-8 opacity-80">Ran end-to-end ML workflows on real-world datasets (cleaning, feature engineering, training, evaluation) with pandas and scikit-learn, comparing models on held-out metrics.</p>
                     <div class="flex flex-wrap gap-2 md:gap-3 md:justify-end">
                         <span class="skill-badge">ML_MODELS</span>
                         <span class="skill-badge">DATA_ANALYSIS</span>
@@ -455,27 +456,27 @@
             <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-secondary hover:text-white hover:brightness-110 transition-all duration-500 group interactive">
                 <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">01_FEATURED_STABLE</p>
                 <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Lumina RAG Assistant</h3>
-                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">A fully private, local-first document intelligence assistant powered by Ollama, FAISS, and dynamic multi-model selection. Features metadata-aware evidence context and a multi-tier OCR pipeline.</p>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Private, local document Q&amp;A with citations (FastAPI, FAISS, Ollama). Retrieval tested with recall@k and MRR.</p>
                 <div class="flex justify-between items-center">
                     <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/lumina-rag-assistant" target="_blank">terminal</a>
                     <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">LLM_ORCHESTRATOR</span>
                 </div>
             </div>
-            <!-- Project 2: AI Healthcare Platform -->
+            <!-- Project 2: Clinical NLP Demo -->
             <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-primary hover:text-background hover:brightness-110 transition-all duration-500 group interactive">
-                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">02_IN_PROGRESS</p>
-                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">AI Healthcare Platform</h3>
-                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Developing a comprehensive platform integrating AI for healthcare solutions, focusing on diagnostics and predictive patient analytics.</p>
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">02_STABLE</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Clinical NLP Demo</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Turns synthetic doctor notes into structured sections and a medication list. F1 0.71 → 0.97 on held-out notes.</p>
                 <div class="flex justify-between items-center">
-                    <span class="material-symbols-outlined text-3xl md:text-4xl transition-transform group-hover:translate-x-2 group-hover:-translate-y-2">north_east</span>
-                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">HEALTH_TECH</span>
+                    <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/Clinical-NLP-Demo" target="_blank">terminal</a>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">CLINICAL_NLP</span>
                 </div>
             </div>
             <!-- Project 3: Disaster Segmentation -->
             <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-secondary hover:text-white hover:brightness-110 transition-all duration-500 group interactive">
                 <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">03_STABLE</p>
                 <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Disaster Segmentation</h3>
-                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Semantic segmentation of satellite imagery for disaster impact assessment using advanced computer vision architectures.</p>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Flood damage maps from drone images with a U-Net + ResNet34 in PyTorch. 70.7% mean IoU on 448 test images.</p>
                 <div class="flex justify-between items-center">
                     <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/Disaster-segmentation" target="_blank">terminal</a>
                     <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">COMPUTER_VISION</span>
@@ -485,7 +486,7 @@
             <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-primary hover:text-background hover:brightness-110 transition-all duration-500 group interactive">
                 <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">04_STABLE</p>
                 <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">CafeCritic</h3>
-                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">A robust cafe recommender system utilizing machine learning algorithms and collaborative filtering for personalized experiences.</p>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Cafe recommender using TF-IDF similarity and ratings, redesigned after a data audit ruled out collaborative filtering.</p>
                 <div class="flex justify-between items-center">
                     <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/cafecritic-recommender" target="_blank">terminal</a>
                     <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">RECOMMENDER_SYS</span>
@@ -495,25 +496,25 @@
             <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-secondary hover:text-white hover:brightness-110 transition-all duration-500 group interactive">
                 <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">01_FEATURED_STABLE</p>
                 <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Lumina RAG Assistant</h3>
-                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">A fully private, local-first document intelligence assistant powered by Ollama, FAISS, and dynamic multi-model selection.</p>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Private, local document Q&amp;A with citations (FastAPI, FAISS, Ollama). Retrieval tested with recall@k and MRR.</p>
                 <div class="flex justify-between items-center">
                     <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/lumina-rag-assistant" target="_blank">terminal</a>
                     <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">LLM_ORCHESTRATOR</span>
                 </div>
             </div>
             <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-primary hover:text-background hover:brightness-110 transition-all duration-500 group interactive">
-                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">02_IN_PROGRESS</p>
-                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">AI Healthcare Platform</h3>
-                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Developing a comprehensive platform integrating AI for healthcare solutions.</p>
+                <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">02_STABLE</p>
+                <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Clinical NLP Demo</h3>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Turns synthetic doctor notes into structured sections and a medication list. F1 0.71 → 0.97 on held-out notes.</p>
                 <div class="flex justify-between items-center">
-                    <span class="material-symbols-outlined text-3xl md:text-4xl transition-transform group-hover:translate-x-2 group-hover:-translate-y-2">north_east</span>
-                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">HEALTH_TECH</span>
+                    <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/Clinical-NLP-Demo" target="_blank">terminal</a>
+                    <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">CLINICAL_NLP</span>
                 </div>
             </div>
             <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-secondary hover:text-white hover:brightness-110 transition-all duration-500 group interactive">
                 <p class="font-mono-label mb-6 md:mb-8 group-hover:text-white text-primary">03_STABLE</p>
                 <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">Disaster Segmentation</h3>
-                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Semantic segmentation of satellite imagery for disaster impact assessment.</p>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Flood damage maps from drone images with a U-Net + ResNet34 in PyTorch. 70.7% mean IoU on 448 test images.</p>
                 <div class="flex justify-between items-center">
                     <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/Disaster-segmentation" target="_blank">terminal</a>
                     <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">COMPUTER_VISION</span>
@@ -522,7 +523,7 @@
             <div class="flex-none w-[85vw] md:w-[500px] p-8 md:p-12 border-r-2 border-primary/20 hover:bg-primary hover:text-background hover:brightness-110 transition-all duration-500 group interactive">
                 <p class="font-mono-label mb-6 md:mb-8 group-hover:text-background text-secondary">04_STABLE</p>
                 <h3 class="font-display-xl text-2xl md:text-4xl mb-4 md:mb-6">CafeCritic</h3>
-                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">A robust cafe recommender system utilizing machine learning algorithms.</p>
+                <p class="mb-8 md:mb-10 text-base md:text-lg opacity-70 group-hover:opacity-100 h-28 md:h-32 overflow-hidden">Cafe recommender using TF-IDF similarity and ratings, redesigned after a data audit ruled out collaborative filtering.</p>
                 <div class="flex justify-between items-center">
                     <a class="material-symbols-outlined text-3xl md:text-4xl block transition-transform group-hover:scale-110" href="https://github.com/jeevanraj-28/cafecritic-recommender" target="_blank">terminal</a>
                     <span class="font-mono-label text-xs opacity-40 group-hover:opacity-100">RECOMMENDER_SYS</span>
@@ -542,7 +543,6 @@
             <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_LANGUAGES</h3>
             <div class="space-y-2 font-display-xl text-lg md:text-2xl uppercase">
                 <p>Python</p>
-                <p>C++</p>
                 <p>SQL</p>
             </div>
         </div>
@@ -550,25 +550,27 @@
             <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_ML/AI</h3>
             <div class="space-y-2 font-display-xl text-lg md:text-2xl uppercase">
                 <p>PyTorch</p>
-                <p>TensorFlow</p>
-                <p>NLP</p>
-                <p>CV</p>
+                <p>Scikit-learn</p>
+                <p>Hugging Face</p>
+                <p>OpenCV</p>
             </div>
         </div>
         <div class="p-5 md:p-8 border border-white/20 reveal">
-            <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_CLOUD</h3>
+            <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_LLM/RAG</h3>
             <div class="space-y-2 font-display-xl text-lg md:text-2xl uppercase">
-                <p>AWS</p>
-                <p>Docker</p>
-                <p>FastAPI</p>
+                <p>RAG</p>
+                <p>FAISS</p>
+                <p>Ollama</p>
+                <p>Embeddings</p>
             </div>
         </div>
         <div class="p-5 md:p-8 border border-white/20 md:mt-20 reveal">
-            <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_TOOLS</h3>
+            <h3 class="font-mono-label text-primary mb-4 md:mb-6 text-xs md:text-sm">_SERVING</h3>
             <div class="space-y-2 font-display-xl text-lg md:text-2xl uppercase">
+                <p>FastAPI</p>
+                <p>Docker</p>
+                <p>Celery</p>
                 <p>Git</p>
-                <p>Linux</p>
-                <p>Jupyter</p>
             </div>
         </div>
     </div>

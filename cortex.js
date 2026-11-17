@@ -481,10 +481,10 @@
                 card.addEventListener('mouseenter', () => {
                     if (!state.visible || state.sleeping) return;
                     hoverStart = Date.now();
-                    state.viewedProjects.add(i % 4); // 4 unique projects
+                    state.viewedProjects.add(i % 6); // 6 unique projects
                     Memory.update(d => {
-                        const projNames = ['lumina-rag', 'healthcare', 'disaster', 'cafecritic'];
-                        const name = projNames[i % 4];
+                        const projNames = ['lumina-rag', 'clinical-nlp', 'disaster', 'cafecritic', 'cortex', 'care'];
+                        const name = projNames[i % 6];
                         if (name && !d.viewedProjects.includes(name)) {
                             d.viewedProjects.push(name);
                         }
@@ -832,6 +832,12 @@
                         '  │                                    │\n' +
                         '  │  04 ▸ CafeCritic              [✓]  │\n' +
                         '  │      Content + rating recommender  │\n' +
+                        '  │                                    │\n' +
+                        '  │  05 ▸ Cortex Intelligence     [✓]  │\n' +
+                        '  │      Local-first system observer   │\n' +
+                        '  │                                    │\n' +
+                        '  │  06 ▸ CARE EMR + AI Scribe    [~]  │\n' +
+                        '  │      Self-hosted EMR + speech AI   │\n' +
                         '  └────────────────────────────────────┘\n'
                     };
                 case 'skills':
@@ -982,7 +988,7 @@
         DEFS: {
             explorer: { name: 'EXPLORER', desc: 'Visited every section', check: () => { const m = Memory.load(); return m.viewedSections.length >= 6; } },
             curious: { name: 'CURIOUS', desc: 'Opened Developer Mode', check: () => { const m = Memory.load(); return m.achievements.includes('curious'); } },
-            researcher: { name: 'RESEARCHER', desc: 'Viewed every project', check: () => state.viewedProjects.size >= 4 }
+            researcher: { name: 'RESEARCHER', desc: 'Viewed every project', check: () => state.viewedProjects.size >= 6 }
         },
         _shown: new Set(),
 
@@ -1199,7 +1205,7 @@
             Speech.show('Good luck.', 2500);
         } else if (mem.totalTimeMs > 300000) {
             Speech.show('Curiosity detected.', 2500);
-        } else if (mem.viewedProjects.length >= 4) {
+        } else if (mem.viewedProjects.length >= 6) {
             Speech.show('Everything indexed.', 2500);
         } else {
             Speech.show('Welcome back.', 2500);

@@ -1056,3 +1056,114 @@ a.cortex-msg-src:hover, a.cortex-msg-src:focus-visible { color: #B1FFD6; text-de
 @media (prefers-reduced-motion: reduce) {
     .cortex-backdrop { transition: none; }
 }
+
+/* ============================================
+   HERO DOCK: big core in the hero, flies to the corner on scroll
+   ============================================ */
+
+.cortex-robot-wrapper {
+    transition: width 0.95s cubic-bezier(0.23, 1, 0.32, 1), height 0.95s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.cortex-robot-wrapper .cortex-orb { width: 100%; height: 100%; }
+.cortex-container.cx-follow,
+.cortex-container.cx-follow .cortex-robot-wrapper { transition: none; }
+.cortex-container.cortex-hero-mode .cortex-robot-wrapper.cortex-floating { animation-duration: 5s; }
+.cortex-container.cortex-hero-mode .cortex-orb {
+    filter: drop-shadow(0 0 14px rgba(177, 255, 214, 0.5)) drop-shadow(0 0 42px rgba(139, 92, 246, 0.35));
+}
+.cortex-container.cortex-hero-mode .cortex-ask-tag { font-size: 11px; padding: 4px 12px; top: calc(100% + 18px); }
+
+.cortex-hero-slot {
+    position: absolute;
+    display: none;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+    font-family: 'JetBrains Mono', monospace;
+}
+.cortex-hero-slot.cx-slot-active { opacity: 1; transform: none; transition-delay: 0.25s; }
+
+.cx-hud-ring { position: absolute; border-radius: 50%; }
+.cx-hud-ring-1 { inset: 0; border: 1px dashed rgba(177, 255, 214, 0.28); animation: cx-spin 80s linear infinite; }
+.cx-hud-ring-2 { inset: 9%; border: 1px solid rgba(139, 92, 246, 0.28); box-shadow: 0 0 60px rgba(139, 92, 246, 0.12) inset; }
+.cx-hud-ticks {
+    position: absolute; inset: 3%; border-radius: 50%;
+    background: repeating-conic-gradient(rgba(177, 255, 214, 0.38) 0 0.7deg, transparent 0.7deg 6deg);
+    -webkit-mask: radial-gradient(circle, transparent 63%, #000 63.5%, #000 66%, transparent 66.5%);
+    mask: radial-gradient(circle, transparent 63%, #000 63.5%, #000 66%, transparent 66.5%);
+    animation: cx-spin-rev 120s linear infinite;
+}
+.cx-hud-cross::before, .cx-hud-cross::after {
+    content: ""; position: absolute; background: rgba(177, 255, 214, 0.35);
+}
+.cx-hud-cross::before { left: 50%; top: -14px; width: 1px; height: calc(100% + 28px); transform: translateX(-0.5px);
+    -webkit-mask: linear-gradient(#000 0 22px, transparent 22px calc(100% - 22px), #000 calc(100% - 22px));
+    mask: linear-gradient(#000 0 22px, transparent 22px calc(100% - 22px), #000 calc(100% - 22px)); }
+.cx-hud-cross::after { top: 50%; left: -14px; height: 1px; width: calc(100% + 28px);
+    -webkit-mask: linear-gradient(90deg, #000 0 22px, transparent 22px calc(100% - 22px), #000 calc(100% - 22px));
+    mask: linear-gradient(90deg, #000 0 22px, transparent 22px calc(100% - 22px), #000 calc(100% - 22px)); }
+
+.cx-hud-label {
+    position: absolute; font-size: clamp(8px, 0.62vw, 10px); letter-spacing: 1.5px; line-height: 1.7;
+    color: rgba(177, 255, 214, 0.75); white-space: nowrap;
+}
+.cx-hud-tl { top: -10px; left: -2%; }
+.cx-hud-tr { top: -10px; right: -2%; }
+.cx-hud-bl { bottom: -22px; left: -2%; }
+.cx-hud-br { bottom: -10px; right: -2%; color: #a78bfa; animation: cx-breathe-dot 1.6s ease-in-out infinite; }
+.cx-hud-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #B1FFD6; box-shadow: 0 0 6px #B1FFD6; margin-right: 6px; vertical-align: 1px; }
+.cx-hud-focus { color: #e4fff1; }
+.cx-hud-flick { animation: cx-flicker 0.5s steps(1) 1; }
+
+/* WARP: played on every move between positions */
+@keyframes cx-flare { 0% { opacity: 1; transform: scale(1.3); } 100% { opacity: 0.8; transform: scale(0.97); } }
+.cortex-orb.cortex-warping .cx-boost { animation: cx-spin 0.5s linear infinite; }
+.cortex-orb.cortex-warping .cx-boost-rev { animation: cx-spin-rev 0.4s linear infinite; }
+.cortex-orb.cortex-warping .cx-halo { animation: cx-flare 0.95s ease-out; }
+.cortex-orb.cortex-warping .cortex-screen-overlay { animation: cx-scan 0.9s ease-in-out; }
+.cortex-orb.cortex-warping .cx-ripple { animation: cx-ripple 0.85s ease-out; }
+.cortex-orb.cortex-warping .cx-flick { animation-duration: 0.4s; }
+
+/* Sound toggle */
+.cortex-chat-ctrls { display: flex; gap: 6px; flex-shrink: 0; }
+.cortex-chat-sound {
+    background: none; border: 1px solid rgba(177, 255, 214, 0.6); color: #B1FFD6;
+    font: inherit; font-size: 10px; padding: 2px 7px; cursor: pointer; letter-spacing: 1px;
+}
+.cortex-chat-sound.cx-off { border-color: #889990; color: #889990; }
+.cortex-chat-sound:hover, .cortex-chat-sound:focus-visible { background: rgba(177, 255, 214, 0.1); outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    .cx-hud-ring-1, .cx-hud-ticks, .cx-hud-br, .cx-hud-flick { animation: none !important; }
+    .cortex-robot-wrapper { transition: none; }
+}
+
+/* Bubbles flip away from the screen edge the core is docked against */
+.cortex-container.cx-side-left .cortex-speech,
+.cortex-container.cx-side-left .cortex-teaser,
+.cortex-container.cx-side-left .cortex-tour-prompt { right: auto; left: -4px; }
+.cortex-container.cx-side-left .cortex-speech::after { right: auto; left: 40px; }
+.cortex-container.cx-edge-top .cortex-speech,
+.cortex-container.cx-edge-top .cortex-teaser,
+.cortex-container.cx-edge-top .cortex-tour-prompt { bottom: auto; top: calc(100% + 30px); }
+.cortex-container.cx-edge-top .cortex-speech::after { bottom: auto; top: -5px; transform: rotate(225deg); }
+.cortex-container.cortex-hero-mode .cortex-speech { right: 50%; transform: translateX(50%); }
+.cortex-container.cortex-hero-mode .cortex-speech.cortex-speech-visible { transform: translateX(50%); }
+.cortex-container.cortex-hero-mode .cortex-speech::after { right: calc(50% - 4px); }
+
+/* ABOUT station: sits in the empty column under the heading */
+.cortex-hero-slot.cortex-about-slot {
+    position: relative;
+    display: none;
+    width: min(100%, 360px);
+    aspect-ratio: 1 / 1;
+    margin: 56px 0 0 4%;
+}
+@media (min-width: 1100px) {
+    .cortex-hero-slot.cortex-about-slot { display: block; }
+}
+
+/* In a station the HUD already invites the click */
+.cortex-container.cortex-hero-mode .cortex-ask-tag { opacity: 0; }

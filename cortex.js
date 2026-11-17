@@ -98,7 +98,7 @@
     </svg>`;
     }
 
-    const ROBOT_SVG = orbSVG(96, 'main');
+    const ROBOT_SVG = orbSVG(96, 'main').replace('width="96" height="96"', 'width="100%" height="100%"');
 
     // ========== STATE ==========
 
@@ -272,6 +272,7 @@
         },
 
         achievement(name, desc) {
+            Sound.chime();
             this.show('Achievement Unlocked', name, desc, 4000);
         }
     };
@@ -345,54 +346,299 @@
 
     const PositionManager = {
         POSITIONS: {
-            hero:       { xSide: 'right', ySide: 'bottom' }, // below the hero text block
-            about:      { xSide: 'left',  ySide: 'bottom' }, // left of the stat cards
-            experience: { xSide: 'right', ySide: 'top'    }, // upper-right beside timeline
-            projects:   { xSide: 'left',  ySide: 'top'    }, // upper-left above marquee
-            skills:     { xSide: 'right', ySide: 'top'    }, // upper-right in dark section
-            contact:    { xSide: 'left',  ySide: 'bottom' }, // lower-left beside contact card
+            // Docked: always top-right under the nav, where it never covers content.
+            hero:       { xSide: 'right', ySide: 'bottom' },
+            about:      { xSide: 'right', ySide: 'top'    },
+            experience: { xSide: 'right', ySide: 'top'    },
+            projects:   { xSide: 'right', ySide: 'top'    },
+            skills:     { xSide: 'right', ySide: 'top'    },
+            contact:    { xSide: 'right', ySide: 'top'    },
         },
         MARGIN_X: 40,
-        MARGIN_Y_TOP: 110,   // clear the fixed nav bar
-        MARGIN_Y_BOTTOM: 80, // clear above viewport bottom
+        MARGIN_Y_TOP: 110,
+        MARGIN_Y_BOTTOM: 80,
+        SMALL: 96,
+        CORE_RATIO: 0.62,      // core size inside the hero HUD
+        _slot: null,
+        _slots: [],
+        _hero: null,
+        _slotSize: 0,
+        _mode: null,           // 'hero' | 'dock'
+        _last: null,
+        _raf: 0,
+        _focusTimer: null,
 
+        // Corner position for a section (docked, small)
         _px(section) {
             const vw = window.innerWidth;
             const vh = window.innerHeight;
-            const rw = 96, rh = 96;
+            const rw = this.SMALL, rh = this.SMALL;
             const isMobile = vw < 768;
             const mx = isMobile ? 14 : this.MARGIN_X;
             const myTop = isMobile ? 80 : this.MARGIN_Y_TOP;
             const myBot = isMobile ? 20 : this.MARGIN_Y_BOTTOM;
-            // On phones, stay bottom-right so the robot never covers the nav or the text
+            // On phones, stay bottom-right so the core never covers the nav or the text
             const pos = isMobile ? this.POSITIONS.hero : (this.POSITIONS[section] || this.POSITIONS.hero);
             const left = pos.xSide === 'left' ? mx : vw - rw - mx;
             const top  = pos.ySide === 'top'  ? myTop : vh - rh - myBot;
-            return { left, top };
+            return { left, top, size: this.SMALL, xSide: pos.xSide, ySide: pos.ySide };
+        },
+
+        // ---- Hero HUD: the big core lives in the empty space beside the hero text ----
+        buildSlot() {
+            const hero = document.querySelector('section');
+            if (!hero) return;
+            const slot = document.createElement('div');
+            slot.className = 'cortex-hero-slot';
+            slot.setAttribute('aria-hidden', 'true');
+            const n = (window.CORTEX_KB && window.CORTEX_KB.projects.length) || 6;
+            slot.innerHTML =
+                '<div class="cx-hud-ring cx-hud-ring-1"></div>' +
+                '<div class="cx-hud-ring cx-hud-ring-2"></div>' +
+                '<div class="cx-hud-ticks"></div>' +
+                '<div class="cx-hud-cross"></div>' +
+                '<div class="cx-hud-label cx-hud-tl">CORTEX // PORTFOLIO AI</div>' +
+                '<div class="cx-hud-label cx-hud-tr"><span class="cx-hud-dot"></span>ONLINE</div>' +
+                '<div class="cx-hud-label cx-hud-bl">INDEX ' + n + ' PROJECTS · LIVE GITHUB<br><span class="cx-hud-focus">FOCUS ▸ RAG</span></div>' +
+                '<div class="cx-hud-label cx-hud-br">› CLICK THE CORE</div>';
+            hero.appendChild(slot);
+            this._slot = slot;
+            this._hero = hero;
+            this._slots = [slot];
+            this.layoutSlot();
+
+            // Second station: the empty column under ABOUT_
+            const aboutCol = document.querySelector('#about .reveal');
+            if (aboutCol) {
+                const a = document.createElement('div');
+                a.className = 'cortex-hero-slot cortex-about-slot';
+                a.setAttribute('aria-hidden', 'true');
+                a.innerHTML =
+                    '<div class="cx-hud-ring cx-hud-ring-1"></div>' +
+                    '<div class="cx-hud-ring cx-hud-ring-2"></div>' +
+                    '<div class="cx-hud-ticks"></div>' +
+                    '<div class="cx-hud-cross"></div>' +
+                    '<div class="cx-hud-label cx-hud-tl">PROFILE // AI · ML · DS</div>' +
+                    '<div class="cx-hud-label cx-hud-br">› ASK ME ANYTHING</div>';
+                aboutCol.appendChild(a);
+                this._slots.push(a);
+            }
+
+            // Cycle the focus readout through Jeevan's domains
+            const focus = slot.querySelector('.cx-hud-focus');
+            const domains = ['RAG', 'LLM SYSTEMS', 'NLP', 'COMPUTER VISION', 'DATA SCIENCE', 'ML EVALUATION'];
+            let i = 0;
+            setInterval(() => {
+                if (document.hidden || this._mode !== 'hero') return;
+                i = (i + 1) % domains.length;
+                focus.textContent = 'FOCUS ▸ ' + domains[i];
+                focus.classList.remove('cx-hud-flick');
+                void focus.offsetWidth;
+                focus.classList.add('cx-hud-flick');
+            }, 1800);
+        },
+
+        layoutSlot() {
+            const slot = this._slot, hero = this._hero;
+            if (!slot) return;
+            const vw = window.innerWidth;
+            const heroRect = hero.getBoundingClientRect();
+            const para = hero.querySelector('p.font-body-lg');
+            const btns = hero.querySelectorAll('.reveal > div.flex > *');
+            let right = para ? para.getBoundingClientRect().right : 0;
+            btns.forEach(b => { right = Math.max(right, b.getBoundingClientRect().right); });
+            const avail = vw - right - 90;
+            const size = Math.floor(Math.min(470, avail, heroRect.height * 0.62));
+            if (vw < 1100 || size < 210) {
+                this._slotSize = 0;
+                slot.style.display = 'none';
+                return;
+            }
+            this._slotSize = size;
+            const content = para ? para.getBoundingClientRect() : heroRect;
+            const cx = right + 50 + avail / 2;
+            // Centre the core in the visible hero (not on the paragraph) so it reads as the main figure
+            const visibleH = Math.min(heroRect.height, window.innerHeight);
+            const cy = heroRect.top + window.scrollY * 0 + visibleH * 0.48;
+            void content;
+            slot.style.display = 'block';
+            slot.style.width = size + 'px';
+            slot.style.height = size + 'px';
+            slot.style.left = (cx - size / 2 - heroRect.left) + 'px';
+            slot.style.top = (cy - size / 2 - heroRect.top) + 'px';
+        },
+
+        // The station nearest the middle of the screen, if one is in view
+        _activeSlot() {
+            const vh = window.innerHeight;
+            let best = null, bestD = Infinity;
+            this._slots.forEach(sl => {
+                if (!sl || sl.offsetParent === null) return;           // display:none
+                if (sl === this._slot && !this._slotSize) return;
+                const r = sl.getBoundingClientRect();
+                if (r.width < 200) return;
+                if (r.bottom > vh * 0.38 && r.top < vh * 0.72) {
+                    const d = Math.abs(r.top + r.height / 2 - vh / 2);
+                    if (d < bestD) { bestD = d; best = sl; }
+                }
+            });
+            return best;
+        },
+
+        _inHero() { return !!this._activeSlot(); },
+
+        _target(section) {
+            const sl = this._activeSlot();
+            if (sl) {
+                const r = sl.getBoundingClientRect();
+                const s = Math.round(r.width * this.CORE_RATIO);
+                return { left: r.left + (r.width - s) / 2, top: r.top + (r.height - s) / 2, size: s, mode: 'hero', slot: sl };
+            }
+            return Object.assign(this._px(section), { mode: 'dock', slot: null });
+        },
+
+        _apply(t, animate) {
+            const c = els.container;
+            if (!c) return;
+            c.classList.toggle('cx-follow', !animate);
+            c.style.left = t.left + 'px';
+            c.style.top = t.top + 'px';
+            c.style.right = 'auto';
+            c.style.bottom = 'auto';
+            if (els.wrapper) {
+                els.wrapper.style.width = t.size + 'px';
+                els.wrapper.style.height = t.size + 'px';
+            }
+            const moved = this._last && (Math.abs(this._last.left - t.left) + Math.abs(this._last.top - t.top) > 60 || Math.abs(this._last.size - t.size) > 8);
+            if (animate && moved && state.visible) this.warp();
+            c.classList.toggle('cortex-hero-mode', t.mode === 'hero');
+            c.classList.toggle('cx-side-left', t.mode === 'dock' && t.xSide === 'left');
+            c.classList.toggle('cx-edge-top', t.mode === 'dock' && t.ySide === 'top');
+            if (t.mode === 'dock' && Teaser._pending) { Teaser._pending = false; setTimeout(() => Teaser.show(), 1400); }
+            this._slots.forEach(sl => sl.classList.toggle('cx-slot-active', sl === t.slot));
+            this._mode = t.mode;
+            this._last = t;
         },
 
         moveTo(section) {
-            if (!els.container) return;
-            const { left, top } = this._px(section);
-            els.container.style.left   = left + 'px';
-            els.container.style.top    = top  + 'px';
-            els.container.style.right  = 'auto';
-            els.container.style.bottom = 'auto';
+            this._apply(this._target(section || state.currentSection || 'hero'), true);
         },
 
-        // Re-snap on resize without animation
+        // Movement effect: inner rings spin up, halo flares, scan line, soft sweep
+        warp() {
+            if (!els.robotSvg) return;
+            const now = Date.now();
+            if (now - (this._warpAt || 0) < 400) return;
+            this._warpAt = now;
+            els.robotSvg.classList.remove('cortex-warping');
+            void els.robotSvg.getBoundingClientRect();
+            els.robotSvg.classList.add('cortex-warping');
+            clearTimeout(this._focusTimer);
+            this._focusTimer = setTimeout(() => els.robotSvg && els.robotSvg.classList.remove('cortex-warping'), 1000);
+            Sound.warp();
+        },
+
+        _onScroll() {
+            if (this._raf) return;
+            this._raf = requestAnimationFrame(() => {
+                this._raf = 0;
+                const t = this._target(state.currentSection);
+                const same = this._last && t.mode === this._last.mode && t.slot === this._last.slot;
+                if (same && t.mode === 'hero') {
+                    this._apply(t, false);                        // ride along with the station
+                } else if (!same) {
+                    this._apply(t, true);                         // fly between stations / dock
+                }
+            });
+        },
+
         _onResize() {
-            const transitionBackup = els.container.style.transition;
-            els.container.style.transition = 'none';
-            this.moveTo(state.currentSection || 'hero');
-            // Force reflow then restore transition
-            // eslint-disable-next-line no-unused-expressions
-            els.container.offsetLeft;
-            els.container.style.transition = transitionBackup;
+            this.layoutSlot();
+            this._apply(this._target(state.currentSection || 'hero'), false);
         },
 
         initResize() {
+            this.buildSlot();
             window.addEventListener('resize', () => this._onResize(), { passive: true });
+            window.addEventListener('scroll', () => this._onScroll(), { passive: true });
+            const relayout = () => this._onResize();
+            window.addEventListener('load', relayout);
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+        }
+    };
+
+    // ========== SOUND: synthesized UI tones (no voice) ==========
+    // Web Audio only. Starts after the visitor's first click or key press
+    // (browser autoplay rules); mute is remembered per browser.
+
+    const Sound = {
+        KEY: 'cortex_sound',
+        ctx: null,
+        master: null,
+        _booted: false,
+        _lastHover: 0,
+
+        enabled() { try { return localStorage.getItem(this.KEY) !== 'off'; } catch { return true; } },
+        setEnabled(on) { try { localStorage.setItem(this.KEY, on ? 'on' : 'off'); } catch {} },
+
+        init() {
+            const unlock = () => this.unlock();
+            ['pointerdown', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, unlock, { passive: true }));
+        },
+
+        unlock() {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return;
+            if (!this.ctx) {
+                try {
+                    this.ctx = new AC();
+                    this.master = this.ctx.createGain();
+                    this.master.gain.value = 0.12;
+                    this.master.connect(this.ctx.destination);
+                } catch { this.ctx = null; return; }
+            }
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+            if (!this._booted && state.visible) {
+                this._booted = true;
+                setTimeout(() => this.boot(), 60);
+            }
+        },
+
+        _ok() { return this.ctx && this.ctx.state === 'running' && this.enabled() && !document.hidden; },
+
+        tone(freq, dur, opts) {
+            if (!this._ok()) return;
+            const o = Object.assign({ type: 'sine', gain: 0.5, at: 0, to: null, attack: 0.006 }, opts || {});
+            const t = this.ctx.currentTime + o.at;
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = o.type;
+            osc.frequency.setValueAtTime(freq, t);
+            if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.exponentialRampToValueAtTime(o.gain, t + o.attack);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+            osc.connect(g);
+            g.connect(this.master);
+            osc.start(t);
+            osc.stop(t + dur + 0.03);
+        },
+
+        boot()    { this.tone(220, 0.42, { type: 'triangle', to: 880, gain: 0.22, attack: 0.04 }); this.tone(1320, 0.1, { at: 0.4, gain: 0.25 }); this.tone(1760, 0.14, { at: 0.5, gain: 0.2 }); },
+        open()    { this.tone(420, 0.15, { type: 'triangle', to: 980, gain: 0.45 }); this.tone(1320, 0.09, { at: 0.13, gain: 0.3 }); },
+        close()   { this.tone(900, 0.17, { type: 'triangle', to: 300, gain: 0.35 }); },
+        send()    { this.tone(1046, 0.05, { type: 'square', gain: 0.12 }); },
+        receive() { this.tone(660, 0.07, { gain: 0.35 }); this.tone(990, 0.1, { at: 0.07, gain: 0.3 }); },
+        tick()    { this.tone(2600, 0.012, { type: 'square', gain: 0.035 }); },
+        deny()    { this.tone(320, 0.08, { type: 'square', gain: 0.14 }); this.tone(250, 0.11, { at: 0.11, type: 'square', gain: 0.14 }); },
+        warp()    { this.tone(160, 0.38, { type: 'triangle', to: 640, gain: 0.16, attack: 0.06 }); this.tone(1480, 0.06, { at: 0.34, gain: 0.12 }); },
+        ping()    { this.tone(1568, 0.08, { gain: 0.25 }); this.tone(2093, 0.12, { at: 0.08, gain: 0.2 }); },
+        chime()   { [784, 988, 1175].forEach((f, i) => this.tone(f, 0.13, { at: i * 0.08, gain: 0.25 })); },
+        hover() {
+            const now = Date.now();
+            if (now - this._lastHover < 1200) return;
+            this._lastHover = now;
+            this.tone(1760, 0.035, { gain: 0.1 });
         }
     };
 
@@ -442,8 +688,9 @@
         },
 
         _onSectionEnter(section) {
-            // Reposition robot to the empty area of this section
+            // Reposition, then play the warp so every section change has a movement cue
             PositionManager.moveTo(section);
+            if (state.visible) PositionManager.warp();
 
             // Track in memory
             Memory.update(d => {
@@ -865,7 +1112,7 @@
                         '  │  04 ▸ CafeCritic              [✓]  │\n' +
                         '  │      Content + rating recommender  │\n' +
                         '  │                                    │\n' +
-                        '  │  05 ▸ Cortex Intelligence     [✓]  │\n' +
+                        '  │  05 ▸ Cortex Intelligence     [~]  │\n' +
                         '  │      Local-first system observer   │\n' +
                         '  │                                    │\n' +
                         '  │  06 ▸ CARE EMR + AI Scribe    [~]  │\n' +
@@ -1111,7 +1358,8 @@
                         '<div><div class="cortex-chat-title">CORTEX</div>' +
                         '<div class="cortex-chat-status"><span class="cortex-chat-dot"></span><span class="cortex-chat-state">ONLINE</span> · ' + ((window.CORTEX_KB && window.CORTEX_KB.projects.length) || 6) + ' PROJECTS · LIVE GITHUB</div></div>' +
                     '</div>' +
-                    '<button class="cortex-chat-close" type="button" aria-label="Close chat">ESC</button>' +
+                    '<div class="cortex-chat-ctrls"><button class="cortex-chat-sound" type="button" aria-label="Toggle sound effects"></button>' +
+                    '<button class="cortex-chat-close" type="button" aria-label="Close chat">ESC</button></div>' +
                 '</div>' +
                 '<div class="cortex-chat-sub">Answers come from this site and Jeevan\'s public GitHub, with sources. Nothing is invented.</div>' +
                 '<div class="cortex-chat-log" aria-live="polite"></div>' +
@@ -1137,6 +1385,10 @@
             els.chatState = panel.querySelector('.cortex-chat-state');
 
             panel.querySelector('.cortex-chat-close').addEventListener('click', () => this.close());
+            const snd = panel.querySelector('.cortex-chat-sound');
+            const paint = () => { const on = Sound.enabled(); snd.textContent = on ? 'SFX ON' : 'SFX OFF'; snd.setAttribute('aria-pressed', on); snd.classList.toggle('cx-off', !on); };
+            paint();
+            snd.addEventListener('click', () => { Sound.setEnabled(!Sound.enabled()); paint(); Sound.ping(); });
             panel.querySelector('.cortex-chat-form').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const q = els.chatInput.value;
@@ -1158,6 +1410,7 @@
             els.wrapper.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.toggle(); }
             });
+            els.wrapper.addEventListener('mouseenter', () => Sound.hover());
         },
 
         toggle() { this.open ? this.close() : this.show(); },
@@ -1168,6 +1421,7 @@
             Speech.clear();
             if (els.tourPrompt && els.tourPrompt.classList.contains('cortex-tour-visible')) Tour._dismiss();
             Teaser.hide();
+            Sound.open();
             Memory.update(d => { d.chatUsed = true; });
             if (els.askTag) els.askTag.classList.add('cortex-ask-tag-used');
             els.chat.classList.add('cortex-chat-open');
@@ -1189,6 +1443,7 @@
         close() {
             if (!this.open) return;
             this.open = false;
+            Sound.close();
             if (els.chat) els.chat.classList.remove('cortex-chat-open');
             if (els.backdrop) els.backdrop.classList.remove('cortex-backdrop-on');
             document.documentElement.classList.remove('cortex-focus-mode');
@@ -1207,6 +1462,7 @@
             }
             this.busy = true;
             this._line('cortex-msg cortex-msg-user', q);
+            Sound.send();
             this._setChips([]);
             const thinking = this._line('cortex-chat-thinking', 'scanning sources…');
             this._mode('thinking');
@@ -1263,12 +1519,15 @@
                 return;
             }
             this._fill(extras, a);
+            if (a.source && a.source.label === 'No matching source') Sound.deny(); else Sound.receive();
             this._mode('speaking');
+            let ticks = 0;
             const step = Math.max(2, Math.ceil(text.length / 45)); // ~0.75s for any length
             let i = 0;
             const tick = () => {
                 // Background tabs throttle timers: finish at once instead of stalling
                 i = document.hidden ? text.length : Math.min(text.length, i + step);
+                if (++ticks % 3 === 0) Sound.tick();
                 body.textContent = text.slice(0, i);
                 els.chatLog.scrollTop = els.chatLog.scrollHeight;
                 if (i < text.length) setTimeout(tick, 16);
@@ -1406,8 +1665,10 @@
             let seen = false;
             try { seen = sessionStorage.getItem('cortex_teaser') === '1'; } catch {}
             if (mem.chatUsed || seen || Chat.open || state.terminalOpen || state.tourActive || !state.visible || !els.teaser) return;
+            if (PositionManager._mode === 'hero') { this._pending = true; return; }
             Speech.clear();
             els.teaser.classList.add('cortex-teaser-visible');
+            Sound.ping();
             if (els.robotSvg) {
                 els.robotSvg.classList.add('cortex-speaking');
                 setTimeout(() => els.robotSvg && els.robotSvg.classList.remove('cortex-speaking'), 1600);
@@ -1540,6 +1801,11 @@
         if (Memory.load().chatUsed) els.askTag.classList.add('cortex-ask-tag-used');
         els.wrapper.appendChild(els.askTag);
 
+        // Focus-area tags ask Cortex directly
+        document.querySelectorAll('[data-cortex-ask]').forEach(el => {
+            el.addEventListener('click', () => { Chat.show(); setTimeout(() => Chat.ask(el.getAttribute('data-cortex-ask')), 500); });
+        });
+
         // Any element with data-cortex-open opens the chat (hero button)
         document.querySelectorAll('[data-cortex-open]').forEach(el => {
             el.addEventListener('click', (e) => { e.preventDefault(); Chat.show(); });
@@ -1634,6 +1900,7 @@
 
         // Init subsystems
         CursorTracker.init();
+        Sound.init();
         SleepMode.init();
         Terminal.init();
         initVisibility();

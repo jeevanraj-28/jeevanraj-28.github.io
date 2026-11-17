@@ -65,10 +65,10 @@ window.CORTEX_KB = {
             stack: ['Python', 'scikit-learn', 'TF-IDF', 'Streamlit']
         },
         {
-            id: 'cortex', hook: 'Read-only system observer; every claim linked to raw evidence', domains: ['systems','mlops'], repo: 'cortex', branch: 'main',
+            id: 'cortex', hook: 'In progress: read-only system observer; every claim linked to raw evidence', domains: ['systems','mlops'], repo: 'cortex', branch: 'main',
             name: 'Cortex System Intelligence',
             aliases: ['cortex system', 'cortex intelligence', 'system observer', 'cortex project', 'cortex repo'],
-            summary: 'Local-first, read-only system observer. A daemon records process and system telemetry to SQLite and serves it through a CLI, a loopback REST API and a terminal UI.',
+            summary: 'In progress. Local-first, read-only system observer. A daemon records process and system telemetry to SQLite and serves it through a CLI, a loopback REST API and a terminal UI.',
             result: 'Every statement is labelled OBSERVED, CORRELATED or HYPOTHESIS and links back to the raw observation IDs. Commands use a fixed grammar instead of free text, so there is nothing to prompt-inject.',
             stack: ['Python', 'SQLite', 'REST API', 'TUI']
         },

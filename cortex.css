@@ -1167,3 +1167,38 @@ a.cortex-msg-src:hover, a.cortex-msg-src:focus-visible { color: #B1FFD6; text-de
 
 /* In a station the HUD already invites the click */
 .cortex-container.cortex-hero-mode .cortex-ask-tag { opacity: 0; }
+
+/* ============================================
+   CHAT PANEL: layout polish
+   ============================================ */
+.cortex-chat-header { gap: 10px; padding: 12px; }
+.cortex-chat-id { flex: 1; min-width: 0; gap: 12px; }
+.cortex-chat-id > div:last-child { min-width: 0; }
+.cortex-chat-title { font-size: 15px; letter-spacing: 6px; line-height: 1; }
+.cortex-chat-status { margin-top: 6px; overflow: hidden; text-overflow: ellipsis; }
+.cortex-chat-ctrls { align-self: center; }
+.cortex-chat-sub { padding: 8px 16px; font-size: 10px; letter-spacing: 0.6px; text-transform: uppercase; color: #6f8a80; }
+
+.cortex-chat-log { padding: 16px; gap: 14px; }
+.cortex-msg { font-size: 13px; line-height: 1.6; }
+.cortex-msg-bot { padding: 2px 0 2px 14px; }
+.cortex-msg-user { padding: 8px 12px; font-size: 12.5px; }
+
+/* Chips follow the latest message instead of sitting at the bottom */
+.cortex-chat-log .cortex-chat-chips { padding: 0 0 0 16px; gap: 8px; }
+.cortex-chip { padding: 6px 11px; font-size: 11.5px; line-height: 1.3; }
+
+/* Input: one clean field (overrides the site's form plugin styles) */
+.cortex-chat-form {
+    margin: 0 12px 12px; padding: 0 0 0 12px; gap: 10px;
+    border: 1px solid rgba(177, 255, 214, 0.35);
+    background: rgba(177, 255, 214, 0.03);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.cortex-chat-form:focus-within { border-color: #B1FFD6; box-shadow: 0 0 14px rgba(177, 255, 214, 0.2); }
+.cortex-chat .cortex-chat-input,
+.cortex-chat .cortex-chat-input:focus {
+    border: 0 !important; box-shadow: none !important; outline: none !important;
+    background: transparent !important; padding: 12px 0 !important; border-radius: 0;
+}
+.cortex-chat-send { width: 44px; height: auto; align-self: stretch; font-size: 16px; }

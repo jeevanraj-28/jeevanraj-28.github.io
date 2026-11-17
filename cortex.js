@@ -1356,14 +1356,13 @@
                     '<div class="cortex-chat-id">' +
                         '<div class="cortex-chat-orb">' + orbSVG(44, 'chat') + '</div>' +
                         '<div><div class="cortex-chat-title">CORTEX</div>' +
-                        '<div class="cortex-chat-status"><span class="cortex-chat-dot"></span><span class="cortex-chat-state">ONLINE</span> · ' + ((window.CORTEX_KB && window.CORTEX_KB.projects.length) || 6) + ' PROJECTS · LIVE GITHUB</div></div>' +
+                        '<div class="cortex-chat-status"><span class="cortex-chat-dot"></span><span class="cortex-chat-state">ONLINE</span> · ' + ((window.CORTEX_KB && window.CORTEX_KB.projects.length) || 6) + ' PROJECTS</div></div>' +
                     '</div>' +
                     '<div class="cortex-chat-ctrls"><button class="cortex-chat-sound" type="button" aria-label="Toggle sound effects"></button>' +
                     '<button class="cortex-chat-close" type="button" aria-label="Close chat">ESC</button></div>' +
                 '</div>' +
-                '<div class="cortex-chat-sub">Answers come from this site and Jeevan\'s public GitHub, with sources. Nothing is invented.</div>' +
-                '<div class="cortex-chat-log" aria-live="polite"></div>' +
-                '<div class="cortex-chat-chips"></div>' +
+                '<div class="cortex-chat-sub">Sourced from this site + live GitHub · nothing invented</div>' +
+                '<div class="cortex-chat-log" aria-live="polite"><div class="cortex-chat-chips"></div></div>' +
                 '<form class="cortex-chat-form" autocomplete="off">' +
                     '<span class="cortex-chat-caret" aria-hidden="true">&gt;</span>' +
                     '<input class="cortex-chat-input" type="text" maxlength="300" placeholder="Ask about RAG, ML, projects, skills…" aria-label="Your question">' +
@@ -1490,7 +1489,7 @@
             const div = document.createElement('div');
             div.className = cls;
             div.textContent = text;
-            els.chatLog.appendChild(div);
+            els.chatLog.insertBefore(div, els.chatChips);
             els.chatLog.scrollTop = els.chatLog.scrollHeight;
             return div;
         },
@@ -1501,7 +1500,7 @@
             const body = document.createElement('div');
             body.className = 'cortex-msg-text';
             msg.appendChild(body);
-            els.chatLog.appendChild(msg);
+            els.chatLog.insertBefore(msg, els.chatChips);
             const extras = document.createElement('div');
             extras.className = 'cortex-msg-extras';
             const finish = () => {

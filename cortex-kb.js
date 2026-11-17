@@ -73,12 +73,12 @@ window.CORTEX_KB = {
             stack: ['Python', 'SQLite', 'REST API', 'TUI']
         },
         {
-            id: 'care', hook: 'Self-hosted EMR with a Whisper + Qwen2.5 AI Scribe (in progress)', domains: ['healthcare','llm','ai','mlops','nlp'], repo: 'care', branch: 'main',
-            name: 'CARE EMR + AI Scribe',
-            aliases: ['care', 'emr', 'scribe', 'ai scribe', 'care emr', 'metabase'],
-            summary: 'Self-hosted deployment of the open-source CARE EMR (Django, React, PostgreSQL, Redis, Celery) with Metabase analytics and an AI Scribe on a cloud GPU. In progress.',
-            result: 'The scribe transcribes speech with Whisper and fills EMR forms with Qwen2.5.',
-            stack: ['Django', 'React', 'PostgreSQL', 'Redis', 'Celery', 'Metabase', 'Whisper', 'Qwen2.5']
+            id: 'care', hook: 'Kinetrix internship: clinical speech, radiology AI and an AI Scribe for CARE', domains: ['healthcare', 'nlp', 'cv', 'llm', 'ai', 'mlops'], repo: null, org: 'Kinetrix Technologies',
+            name: 'CARE Healthcare AI (Kinetrix)',
+            aliases: ['care', 'emr', 'scribe', 'ai scribe', 'care emr', 'kinetrix project', 'healthcare platform', 'radiology', 'speech to text'],
+            summary: 'Built during Jeevan\'s AI Development internship at Kinetrix Technologies (Oct 2025 – May 2026) for CARE, an open-source healthcare platform: clinical speech-to-text (Whisper, BERT), radiology image analysis (YOLO, ResNet), and an AI Scribe that turns a doctor\'s speech into filled EMR forms (Whisper + Qwen2.5).',
+            result: 'Models are served through a FastAPI backend secured with OAuth2, JWT and RBAC, with inference on Celery workers and Metabase analytics on top. This is company work, so the code is not public; ask Jeevan for a walkthrough.',
+            stack: ['Whisper', 'BERT', 'YOLO', 'ResNet', 'Qwen2.5', 'FastAPI', 'Celery', 'Django', 'Metabase']
         }
     ],
 

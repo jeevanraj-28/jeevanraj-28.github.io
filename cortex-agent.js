@@ -125,7 +125,7 @@
         });
         if (!res.ok) throw new Error(res.status === 403 ? 'rate' : 'http ' + res.status);
         // Allowlist: only portfolio projects (+ profile and site repos). Client work stays out.
-        const allowed = new Set(KB.projects.map(p => p.repo.toLowerCase()).concat([USER.toLowerCase(), (USER + '.github.io').toLowerCase()]));
+        const allowed = new Set(KB.projects.filter(p => p.repo).map(p => p.repo.toLowerCase()).concat([USER.toLowerCase(), (USER + '.github.io').toLowerCase()]));
         const data = (await res.json()).filter(r => !r.fork && allowed.has(r.name.toLowerCase())).map(r => ({
             name: r.name, url: r.html_url, description: r.description, language: r.language,
             stars: r.stargazers_count, pushed: r.pushed_at, created: r.created_at
@@ -204,15 +204,15 @@
             source: { label: 'Projects section', href: '#projects' },
             actions: [
                 { label: 'Show on page', kind: 'focus', value: [p.id] },
-                { label: 'Open repo', kind: 'open', value: repoUrl(p) },
-                { label: 'How does it work?', kind: 'ask', value: `How does ${p.name} work?` }
+                p.repo ? { label: 'Open repo', kind: 'open', value: repoUrl(p) } : { label: 'Go to experience', kind: 'scroll', value: 'experience' },
+                p.repo ? { label: 'How does it work?', kind: 'ask', value: `How does ${p.name} work?` } : { label: 'Contact Jeevan', kind: 'scroll', value: 'contact' }
             ],
             chips: [`How was ${p.name} tested?`, 'Show me another project']
         };
     }
 
     function matchProjects(nq) {
-        return KB.projects.filter(p => [p.name.toLowerCase(), p.repo.toLowerCase()].concat(p.aliases).some(a => hasPhrase(nq, a)));
+        return KB.projects.filter(p => [p.name.toLowerCase(), (p.repo || '').toLowerCase()].concat(p.aliases).filter(Boolean).some(a => hasPhrase(nq, a)));
     }
 
     function matchDomains(nq) {
@@ -266,6 +266,11 @@
     }
 
     async function readmeAnswer(p, question) {
+        if (!p.repo) {
+            const ans = projectAnswer(p);
+            ans.text = `${p.org} work, so there is no public code for me to read. Here is the brief:\n\n` + ans.text;
+            return ans;
+        }
         let chunks;
         try { chunks = await fetchReadmeChunks(p); }
         catch {
@@ -273,7 +278,7 @@
             a.text = `GitHub isn't responding. Here is what I hold locally:\n\n` + a.text;
             return a;
         }
-        const own = new Set(tokens([p.name, p.repo].concat(p.aliases).join(' ')));
+        const own = new Set(tokens([p.name, p.repo || ''].concat(p.aliases).join(' ')));
         const q = tokens(question).filter(t => !own.has(t)).join(' ');
         const idx = buildIndex(chunks, c => tokens(c.heading).concat(tokens(c.heading), tokens(c.text)));
         let hits = q ? search(idx, q) : [];
@@ -334,7 +339,7 @@
         const recent = repos.filter(r => !meta.has(r.name.toLowerCase())).slice(0, 4);
         return {
             text: 'Live from GitHub. Latest activity:\n\n' + recent.map(r => {
-                const p = KB.projects.find(x => x.repo.toLowerCase() === r.name.toLowerCase());
+                const p = KB.projects.find(x => x.repo && x.repo.toLowerCase() === r.name.toLowerCase());
                 return `▸ ${p ? p.name : r.name} — ${ago(r.pushed)}` + (p ? `\n  ${p.hook}` : (r.description ? `\n  ${trimTo(r.description, 90)}` : ''));
             }).join('\n'),
             source: src,
@@ -485,7 +490,7 @@
                 return readmeAnswer(p, q);
             }
             if (/ (stack|tech|tools|technolog\w*|libraries|framework\w*) /.test(nq)) {
-                return { text: `${p.name} stack: ${p.stack.join(' · ')}`, source: { label: 'Projects section', href: '#projects' }, actions: [{ label: 'Open repo', kind: 'open', value: repoUrl(p) }], chips: [`How does ${p.name} work?`] };
+                return { text: `${p.name} stack: ${p.stack.join(' · ')}`, source: { label: 'Projects section', href: '#projects' }, actions: p.repo ? [{ label: 'Open repo', kind: 'open', value: repoUrl(p) }] : [{ label: 'Go to experience', kind: 'scroll', value: 'experience' }], chips: [`How does ${p.name} work?`] };
             }
             if (/ (result|achieve\w*|outcome|accuracy|score|impact|numbers?) /.test(nq)) {
                 return { text: `${p.name}: ${p.result}`, source: { label: 'Projects section', href: '#projects' }, actions: [{ label: 'Show on page', kind: 'focus', value: [p.id] }], chips: [`How was ${p.name} tested?`] };

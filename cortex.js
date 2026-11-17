@@ -1115,8 +1115,8 @@
                         '  │  05 ▸ Cortex Intelligence     [~]  │\n' +
                         '  │      Local-first system observer   │\n' +
                         '  │                                    │\n' +
-                        '  │  06 ▸ CARE EMR + AI Scribe    [~]  │\n' +
-                        '  │      Self-hosted EMR + speech AI   │\n' +
+                        '  │  06 ▸ CARE Healthcare AI      [K]  │\n' +
+                        '  │      Kinetrix internship work      │\n' +
 
                         '  └────────────────────────────────────┘\n'
                     };

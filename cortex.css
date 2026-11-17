@@ -648,3 +648,127 @@
         font-size: 10px;
     }
 }
+
+/* ============================================
+   CHAT AGENT
+   ============================================ */
+
+.cortex-robot-wrapper { cursor: pointer; }
+.cortex-robot-wrapper:focus-visible { outline: 2px dashed #8B5CF6; outline-offset: 4px; }
+
+.cortex-robot-svg.cortex-thinking .cortex-antenna-tip { animation: cortex-think-blink 0.5s steps(2) infinite; }
+@keyframes cortex-think-blink { 50% { fill: #B1FFD6; } }
+
+.cortex-chat {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 60;
+    width: min(400px, calc(100vw - 32px));
+    height: min(580px, calc(100vh - 120px));
+    display: flex;
+    flex-direction: column;
+    background: #0a0f0d;
+    border: 2px solid #B1FFD6;
+    box-shadow: 8px 8px 0 #8B5CF6;
+    font-family: 'JetBrains Mono', monospace;
+    color: #d6efe3;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px);
+    transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.25s;
+}
+.cortex-chat.cortex-chat-open { opacity: 1; visibility: visible; transform: none; }
+
+.cortex-chat-header {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(177, 255, 214, 0.25);
+    background: rgba(177, 255, 214, 0.04);
+}
+.cortex-chat-title { font-size: 12px; letter-spacing: 2px; color: #B1FFD6; font-weight: 700; }
+.cortex-chat-sub { font-size: 10px; color: #889990; margin-top: 4px; line-height: 1.4; }
+.cortex-chat-close {
+    background: none; border: 1px solid #889990; color: #889990;
+    font: inherit; font-size: 10px; padding: 2px 8px; cursor: pointer; flex-shrink: 0;
+}
+.cortex-chat-close:hover, .cortex-chat-close:focus-visible { border-color: #B1FFD6; color: #B1FFD6; outline: none; }
+
+.cortex-chat-log {
+    flex: 1; min-height: 0; overflow-y: auto;
+    padding: 14px; display: flex; flex-direction: column; gap: 12px;
+    scrollbar-width: thin; scrollbar-color: #8B5CF6 transparent;
+}
+.cortex-msg { font-size: 12.5px; line-height: 1.55; max-width: 100%; }
+.cortex-msg-user {
+    align-self: flex-end; max-width: 85%;
+    background: #8B5CF6; color: #fff; padding: 7px 11px;
+    white-space: pre-wrap; word-break: break-word;
+}
+.cortex-msg-bot {
+    align-self: flex-start; width: 100%;
+    border-left: 2px solid #B1FFD6; padding: 2px 0 2px 11px;
+}
+.cortex-msg-text { white-space: pre-wrap; word-break: break-word; }
+.cortex-msg-src {
+    display: inline-block; margin-top: 8px;
+    font-size: 10px; color: #889990; text-decoration: none; letter-spacing: 0.5px;
+}
+a.cortex-msg-src:hover, a.cortex-msg-src:focus-visible { color: #B1FFD6; text-decoration: underline; outline: none; }
+.cortex-msg-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.cortex-act {
+    background: transparent; border: 1px solid #B1FFD6; color: #B1FFD6;
+    font: inherit; font-size: 11px; padding: 4px 9px; cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.cortex-act:hover, .cortex-act:focus-visible { background: #B1FFD6; color: #0a0f0d; outline: none; }
+.cortex-chat-thinking { font-size: 11px; color: #8B5CF6; }
+.cortex-chat-thinking::after { content: '_'; animation: cortex-think-blink 0.8s steps(2) infinite; }
+
+.cortex-chat-chips {
+    display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px;
+}
+.cortex-chat-chips:empty { display: none; }
+.cortex-chip {
+    background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.6); color: #cbb8ff;
+    font: inherit; font-size: 11px; padding: 4px 9px; cursor: pointer; text-align: left;
+}
+.cortex-chip:hover, .cortex-chip:focus-visible { background: #8B5CF6; color: #fff; outline: none; }
+
+.cortex-chat-form {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border-top: 1px solid rgba(177, 255, 214, 0.25);
+}
+.cortex-chat-caret { color: #8B5CF6; font-size: 13px; }
+.cortex-chat-input {
+    flex: 1; min-width: 0; background: transparent; border: none; outline: none;
+    color: #B1FFD6; font: inherit; font-size: 16px; caret-color: #B1FFD6;
+}
+@media (min-width: 769px) { .cortex-chat-input { font-size: 13px; } }
+.cortex-chat-input::placeholder { color: #5d6b65; }
+.cortex-chat-send {
+    background: #B1FFD6; color: #0a0f0d; border: none; font: inherit; font-weight: 700;
+    width: 32px; height: 28px; cursor: pointer;
+}
+.cortex-chat-send:hover, .cortex-chat-send:focus-visible { background: #8B5CF6; color: #fff; outline: none; }
+
+/* Hide the robot while the panel covers its corner */
+.cortex-container.cortex-chatting { opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.cortex-container.cortex-chatting .cortex-robot-wrapper { pointer-events: none; }
+
+/* Project card focus from the agent */
+.cortex-card-focus {
+    outline: 3px solid #8B5CF6; outline-offset: -3px;
+    background: rgba(139, 92, 246, 0.12);
+}
+
+@media (max-width: 768px) {
+    .cortex-chat {
+        right: 16px; left: 16px; bottom: 16px; width: auto;
+        height: min(72vh, calc(100vh - 100px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cortex-chat { transition: opacity 0.15s !important; transform: none !important; }
+}

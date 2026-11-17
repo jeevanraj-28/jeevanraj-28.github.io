@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jr-portfolio-cache-v1';
+const CACHE_NAME = 'jr-portfolio-cache-v2';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -33,13 +33,18 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch Event
+// Fetch Event: network first so updates show immediately; cache only as offline fallback
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      return cachedResponse || fetch(event.request).catch(() => {
-        // Fallback or network only if offline and cache misses
-      });
-    })
+    fetch(event.request)
+      .then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });

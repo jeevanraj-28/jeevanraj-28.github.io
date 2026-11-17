@@ -336,7 +336,8 @@
             const mx = isMobile ? 14 : this.MARGIN_X;
             const myTop = isMobile ? 80 : this.MARGIN_Y_TOP;
             const myBot = isMobile ? 20 : this.MARGIN_Y_BOTTOM;
-            const pos = this.POSITIONS[section] || this.POSITIONS.hero;
+            // On phones, stay bottom-right so the robot never covers the nav or the text
+            const pos = isMobile ? this.POSITIONS.hero : (this.POSITIONS[section] || this.POSITIONS.hero);
             const left = pos.xSide === 'left' ? mx : vw - rw - mx;
             const top  = pos.ySide === 'top'  ? myTop : vh - rh - myBot;
             return { left, top };
@@ -489,12 +490,13 @@
                             d.viewedProjects.push(name);
                         }
                     });
+                    const kbp = window.CORTEX_KB && window.CORTEX_KB.projects[i % 6];
                     timer1 = setTimeout(() => {
-                        Speech.show('Analyzing implementation...', 2000);
-                    }, 1000);
+                        if (!Chat.open && kbp) Speech.show(kbp.hook, 3200);
+                    }, 900);
                     timer2 = setTimeout(() => {
-                        Speech.show('Architecture looks solid.', 2000);
-                    }, 3000);
+                        if (!Chat.open) Speech.show('Click me to ask about it.', 2000);
+                    }, 4400);
                     Achievements.check();
                 });
                 card.addEventListener('mouseleave', () => {
@@ -790,7 +792,9 @@
                         '  github    Open GitHub\n' +
                         '  linkedin  Open LinkedIn\n' +
                         '  skills    Capability matrix\n' +
-                        '  clear     Clear terminal\n'
+                        '  clear     Clear terminal\n' +
+                        '  Anything else goes to the agent,\n' +
+                        '  e.g. show me your rag work\n'
                     };
                 case 'status': {
                     const uptime = Math.floor((Date.now() - state.startTime) / 1000);
@@ -871,6 +875,15 @@
                         action: () => { if (els.terminalOutput) els.terminalOutput.innerHTML = ''; }
                     };
                 default:
+                    if (window.CortexAgent) {
+                        return {
+                            text: '',
+                            action: () => this._printLine('  searching sources...', 'cx-dim') || window.CortexAgent.ask(cmd).then(a => {
+                                setTimeout(() => this._typeResponse('  ' + a.text.replace(/\n/g, '\n  ') + '\n' +
+                                    (a.source && a.source.label ? '  [src: ' + a.source.label + ']\n' : ''), 'cx-response'), 300);
+                            })
+                        };
+                    }
                     return { text: `  Command not found: "${cmd}"\n  Type "help" for available commands.\n`, cls: 'cx-error' };
             }
         },
@@ -1052,6 +1065,221 @@
         }, 10000);
     }
 
+    // ========== CHAT AGENT (click the robot) ==========
+    // UI for window.CortexAgent (cortex-agent.js). Answers are retrieved
+    // from cortex-kb.js and live GitHub data; nothing is generated.
+
+    const Chat = {
+        open: false,
+        busy: false,
+        _greeted: false,
+        _focusTimer: null,
+        PROJECT_ORDER: ['lumina', 'clinical', 'disaster', 'cafecritic', 'cortex', 'care'],
+
+        build() {
+            const panel = document.createElement('div');
+            panel.className = 'cortex-chat';
+            panel.setAttribute('role', 'dialog');
+            panel.setAttribute('aria-label', 'Ask Cortex about Jeevan');
+            panel.innerHTML =
+                '<div class="cortex-chat-header">' +
+                    '<div><div class="cortex-chat-title">CORTEX // ASK ME</div>' +
+                    '<div class="cortex-chat-sub">Answers from this site + live GitHub. Sources shown. Nothing invented.</div></div>' +
+                    '<button class="cortex-chat-close" type="button" aria-label="Close chat">ESC</button>' +
+                '</div>' +
+                '<div class="cortex-chat-log" aria-live="polite"></div>' +
+                '<div class="cortex-chat-chips"></div>' +
+                '<form class="cortex-chat-form" autocomplete="off">' +
+                    '<span class="cortex-chat-caret" aria-hidden="true">&gt;</span>' +
+                    '<input class="cortex-chat-input" type="text" maxlength="300" placeholder="Ask about RAG, ML, projects, skills…" aria-label="Your question">' +
+                    '<button class="cortex-chat-send" type="submit" aria-label="Send">↵</button>' +
+                '</form>';
+            document.body.appendChild(panel);
+            els.chat = panel;
+            els.chatLog = panel.querySelector('.cortex-chat-log');
+            els.chatChips = panel.querySelector('.cortex-chat-chips');
+            els.chatInput = panel.querySelector('.cortex-chat-input');
+
+            panel.querySelector('.cortex-chat-close').addEventListener('click', () => this.close());
+            panel.querySelector('.cortex-chat-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const q = els.chatInput.value;
+                els.chatInput.value = '';
+                this.ask(q);
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.open && !state.terminalOpen) this.close();
+            });
+
+            // The robot becomes the button that opens the chat
+            els.wrapper.setAttribute('role', 'button');
+            els.wrapper.setAttribute('tabindex', '0');
+            els.wrapper.setAttribute('aria-label', 'Ask Cortex about Jeevan’s work');
+            els.wrapper.addEventListener('click', (e) => {
+                if (e.target.closest('.cortex-tour-prompt')) return;
+                this.toggle();
+            });
+            els.wrapper.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.toggle(); }
+            });
+        },
+
+        toggle() { this.open ? this.close() : this.show(); },
+
+        show() {
+            if (!els.chat || !window.CortexAgent) return;
+            this.open = true;
+            Speech.clear();
+            if (els.tourPrompt && els.tourPrompt.classList.contains('cortex-tour-visible')) Tour._dismiss();
+            els.chat.classList.add('cortex-chat-open');
+            els.container.classList.add('cortex-chatting');
+            if (state.sleeping) SleepMode.wake();
+            if (!this._greeted) {
+                this._greeted = true;
+                this._bot({
+                    text: 'Hi, I\'m Cortex. Ask me about Jeevan\'s work by area (AI, ML, data science, RAG, NLP, computer vision), any project, or what he\'s pushed to GitHub lately.',
+                    source: null, actions: [], chips: window.CortexAgent.suggested
+                });
+            }
+            setTimeout(() => els.chatInput.focus({ preventScroll: true }), 150);
+        },
+
+        close() {
+            if (!this.open) return;
+            this.open = false;
+            if (els.chat) els.chat.classList.remove('cortex-chat-open');
+            if (els.container) els.container.classList.remove('cortex-chatting');
+        },
+
+        async ask(q) {
+            q = (q || '').trim();
+            if (!q || this.busy || !window.CortexAgent) return;
+            this.busy = true;
+            this._line('cortex-msg cortex-msg-user', q);
+            this._setChips([]);
+            const thinking = this._line('cortex-chat-thinking', 'searching sources…');
+            if (els.robotSvg) els.robotSvg.classList.add('cortex-thinking');
+            let answer;
+            try { answer = await window.CortexAgent.ask(q); }
+            catch { answer = { text: 'Something went wrong on my side. Try again, or email Jeevan directly.', source: null, actions: [], chips: [] }; }
+            thinking.remove();
+            if (els.robotSvg) els.robotSvg.classList.remove('cortex-thinking');
+            this._bot(answer);
+            this.busy = false;
+        },
+
+        _line(cls, text) {
+            const div = document.createElement('div');
+            div.className = cls;
+            div.textContent = text;
+            els.chatLog.appendChild(div);
+            els.chatLog.scrollTop = els.chatLog.scrollHeight;
+            return div;
+        },
+
+        _bot(a) {
+            const msg = document.createElement('div');
+            msg.className = 'cortex-msg cortex-msg-bot';
+            const body = document.createElement('div');
+            body.className = 'cortex-msg-text';
+            body.textContent = a.text;
+            msg.appendChild(body);
+
+            if (a.source && a.source.label) {
+                const src = document.createElement(a.source.href ? 'a' : 'div');
+                src.className = 'cortex-msg-src';
+                src.textContent = 'src: ' + a.source.label;
+                if (a.source.href) {
+                    src.href = a.source.href;
+                    if (a.source.href.charAt(0) !== '#') { src.target = '_blank'; src.rel = 'noopener'; }
+                    else src.addEventListener('click', (e) => { e.preventDefault(); this._scroll(a.source.href.slice(1)); });
+                }
+                msg.appendChild(src);
+            }
+
+            const acts = (a.actions || []).filter(x => !x.auto);
+            if (acts.length) {
+                const row = document.createElement('div');
+                row.className = 'cortex-msg-actions';
+                acts.forEach(act => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'cortex-act';
+                    b.textContent = act.label;
+                    b.addEventListener('click', () => this._run(act, b));
+                    row.appendChild(b);
+                });
+                msg.appendChild(row);
+            }
+            els.chatLog.appendChild(msg);
+            els.chatLog.scrollTop = els.chatLog.scrollHeight;
+            (a.actions || []).filter(x => x.auto).forEach(x => this._run(x));
+            this._setChips(a.chips || []);
+        },
+
+        _setChips(chips) {
+            els.chatChips.innerHTML = '';
+            chips.slice(0, 4).forEach(c => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'cortex-chip';
+                b.textContent = c;
+                b.addEventListener('click', () => this.ask(c));
+                els.chatChips.appendChild(b);
+            });
+        },
+
+        _run(act, btn) {
+            switch (act.kind) {
+                case 'scroll': this._scroll(act.value); break;
+                case 'open':
+                    if (/resume/i.test(act.value)) Memory.update(d => { d.downloadedResume = true; });
+                    if (act.value.indexOf('mailto:') === 0) window.location.href = act.value;
+                    else window.open(act.value, '_blank', 'noopener');
+                    break;
+                case 'copy': {
+                    const done = () => { if (btn) btn.textContent = 'Copied ✓'; };
+                    const fail = () => { if (btn) btn.textContent = act.value; };
+                    try { navigator.clipboard.writeText(act.value).then(done, fail); } catch { fail(); }
+                    break;
+                }
+                case 'focus': this._focusProjects(act.value); break;
+                case 'ask': this.ask(act.value); break;
+            }
+        },
+
+        _scroll(id) {
+            const el = id === 'top' ? document.body : document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: state.reducedMotion ? 'auto' : 'smooth', block: 'start' });
+            if (window.innerWidth < 768) this.close();
+        },
+
+        // Stop the marquee on the first matching card and outline every match.
+        _focusProjects(ids) {
+            const section = document.getElementById('projects');
+            const track = section && section.querySelector('.marquee-content');
+            if (!track) return;
+            const n = this.PROJECT_ORDER.length;
+            const cards = [...track.children];
+            const first = cards.slice(0, n).find((c, i) => ids.includes(this.PROJECT_ORDER[i]));
+            if (!first) return;
+            clearTimeout(this._focusTimer);
+            cards.forEach((c, i) => c.classList.toggle('cortex-card-focus', ids.includes(this.PROJECT_ORDER[i % n])));
+            const shift = Math.min(first.offsetLeft, track.scrollWidth / 2);
+            track.style.animation = 'none';
+            track.style.transition = state.reducedMotion ? 'none' : 'transform 0.6s ease';
+            track.style.transform = 'translateX(-' + shift + 'px)';
+            section.scrollIntoView({ behavior: state.reducedMotion ? 'auto' : 'smooth', block: 'start' });
+            if (window.innerWidth < 768) this.close();
+            this._focusTimer = setTimeout(() => {
+                cards.forEach(c => c.classList.remove('cortex-card-focus'));
+                track.style.transition = '';
+                track.style.transform = '';
+                track.style.animation = '';
+            }, 12000);
+        }
+    };
+
     // ========== DOM CREATION ==========
 
     function createDOM() {
@@ -1157,6 +1385,8 @@
         // Tour button listeners
         document.getElementById('cortex-tour-yes').addEventListener('click', () => Tour.start());
         document.getElementById('cortex-tour-skip').addEventListener('click', () => Tour._dismiss());
+
+        Chat.build();
     }
 
     // ========== ENTRANCE SEQUENCE ==========
@@ -1198,6 +1428,7 @@
     }
 
     function greet() {
+        setTimeout(() => { if (!Chat.open) Speech.show('Click me. Ask about my work.', 3500); }, 3200);
         const mem = Memory.load();
         if (mem.visitCount <= 1) {
             Speech.show('Hello, Visitor.', 2500);

@@ -27,8 +27,7 @@ window.CORTEX_KB = {
         healthcare: { label: 'Healthcare AI', words: ['healthcare', 'health', 'medical', 'clinical', 'emr', 'hospital'] },
         recsys:     { label: 'Recommender Systems', words: ['recommender', 'recommendation', 'recsys', 'recommend'] },
         mlops:      { label: 'Deployment / MLOps', words: ['mlops', 'deploy', 'deployment', 'docker', 'fastapi', 'api', 'serving', 'production', 'backend'] },
-        systems:    { label: 'Systems Tooling', words: ['systems', 'system', 'tooling', 'observability', 'monitoring', 'telemetry'] },
-        web:        { label: 'Full-stack / Web', words: ['full stack', 'full-stack', 'fullstack', 'web', 'web app', 'react', 'frontend', 'saas', 'node'] }
+        systems:    { label: 'Systems Tooling', words: ['systems', 'system', 'tooling', 'observability', 'monitoring', 'telemetry'] }
     },
 
     // Projects: alias list is what visitors might type.
@@ -80,14 +79,6 @@ window.CORTEX_KB = {
             summary: 'Self-hosted deployment of the open-source CARE EMR (Django, React, PostgreSQL, Redis, Celery) with Metabase analytics and an AI Scribe on a cloud GPU. In progress.',
             result: 'The scribe transcribes speech with Whisper and fills EMR forms with Qwen2.5.',
             stack: ['Django', 'React', 'PostgreSQL', 'Redis', 'Celery', 'Metabase', 'Whisper', 'Qwen2.5']
-        },
-        {
-            id: 'futurepath', hook: 'Aptitude test + explainable career matching + guarded AI mentor', domains: ['ai', 'llm', 'recsys', 'web', 'mlops'], repo: 'futurepathaiv2', branch: 'main',
-            name: 'FuturePath AI',
-            aliases: ['futurepath', 'future path', 'futurepath ai', 'career guidance', 'career', 'dhruv', 'aptitude', 'edtech'],
-            summary: 'Career guidance platform for Indian Class 10 and 12 students, parents and schools. A 40-question test across 16 aptitude dimensions feeds an explainable, deterministic career-matching engine, with 30-day to 1-year roadmaps and an AI mentor.',
-            result: 'The mentor uses Gemini or OpenAI with guardrails (no invented cut-offs, cites official bodies) and falls back to a deterministic engine when no API key is set. Parents see reports only after student consent. Covered by unit, component, end-to-end and accessibility tests.',
-            stack: ['TypeScript', 'React', 'Node.js', 'Express', 'Prisma', 'SQLite/PostgreSQL', 'Gemini/OpenAI', 'Vitest', 'Playwright']
         }
     ],
 
@@ -116,7 +107,7 @@ window.CORTEX_KB = {
         {
             id: 'skills', title: 'Skills', section: 'skills',
             keywords: 'skills stack tech technologies tools languages know frameworks python pytorch sql libraries capabilities',
-            text: 'ML and data: Python, PyTorch, scikit-learn, Hugging Face Transformers, pandas, NumPy, OpenCV, SQL.\nLLMs and retrieval: RAG, embeddings, FAISS, chunking, retrieval evaluation (recall@k, MRR), prompt design, Ollama.\nServing and tools: FastAPI, Celery, Docker, Streamlit, PostgreSQL, Git, Linux, GitHub Actions.\nWeb: TypeScript, React, Node.js.'
+            text: 'ML and data: Python, PyTorch, scikit-learn, Hugging Face Transformers, pandas, NumPy, OpenCV, SQL.\nLLMs and retrieval: RAG, embeddings, FAISS, chunking, retrieval evaluation (recall@k, MRR), prompt design, Ollama.\nServing and tools: FastAPI, Celery, Docker, Streamlit, PostgreSQL, Git, Linux, GitHub Actions.'
         },
         {
             id: 'contact', title: 'Contact', section: 'contact',

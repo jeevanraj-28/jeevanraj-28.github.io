@@ -510,7 +510,7 @@
                 card.addEventListener('mouseenter', () => {
                     if (!state.visible || state.sleeping) return;
                     hoverStart = Date.now();
-                    const NP = window.CORTEX_KB ? window.CORTEX_KB.projects.length : 7;
+                    const NP = window.CORTEX_KB ? window.CORTEX_KB.projects.length : 6;
                     state.viewedProjects.add(i % NP);
                     Memory.update(d => {
                         const name = window.CORTEX_KB && window.CORTEX_KB.projects[i % NP].id;
@@ -870,9 +870,7 @@
                         '  │                                    │\n' +
                         '  │  06 ▸ CARE EMR + AI Scribe    [~]  │\n' +
                         '  │      Self-hosted EMR + speech AI   │\n' +
-                        '  │                                    │\n' +
-                        '  │  07 ▸ FuturePath AI           [✓]  │\n' +
-                        '  │      Career guidance + AI mentor   │\n' +
+
                         '  └────────────────────────────────────┘\n'
                     };
                 case 'skills':
@@ -1026,7 +1024,7 @@
         DEFS: {
             explorer: { name: 'EXPLORER', desc: 'Visited every section', check: () => { const m = Memory.load(); return m.viewedSections.length >= 6; } },
             curious: { name: 'CURIOUS', desc: 'Opened Developer Mode', check: () => { const m = Memory.load(); return m.achievements.includes('curious'); } },
-            researcher: { name: 'RESEARCHER', desc: 'Viewed every project', check: () => state.viewedProjects.size >= (window.CORTEX_KB ? window.CORTEX_KB.projects.length : 7) }
+            researcher: { name: 'RESEARCHER', desc: 'Viewed every project', check: () => state.viewedProjects.size >= (window.CORTEX_KB ? window.CORTEX_KB.projects.length : 6) }
         },
         _shown: new Set(),
 
@@ -1111,7 +1109,7 @@
                     '<div class="cortex-chat-id">' +
                         '<div class="cortex-chat-orb">' + orbSVG(44, 'chat') + '</div>' +
                         '<div><div class="cortex-chat-title">CORTEX</div>' +
-                        '<div class="cortex-chat-status"><span class="cortex-chat-dot"></span><span class="cortex-chat-state">ONLINE</span> · ' + ((window.CORTEX_KB && window.CORTEX_KB.projects.length) || 7) + ' PROJECTS · LIVE GITHUB</div></div>' +
+                        '<div class="cortex-chat-status"><span class="cortex-chat-dot"></span><span class="cortex-chat-state">ONLINE</span> · ' + ((window.CORTEX_KB && window.CORTEX_KB.projects.length) || 6) + ' PROJECTS · LIVE GITHUB</div></div>' +
                     '</div>' +
                     '<button class="cortex-chat-close" type="button" aria-label="Close chat">ESC</button>' +
                 '</div>' +

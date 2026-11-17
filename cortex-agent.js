@@ -124,7 +124,9 @@
             headers: { Accept: 'application/vnd.github+json' }
         });
         if (!res.ok) throw new Error(res.status === 403 ? 'rate' : 'http ' + res.status);
-        const data = (await res.json()).filter(r => !r.fork).map(r => ({
+        // Allowlist: only portfolio projects (+ profile and site repos). Client work stays out.
+        const allowed = new Set(KB.projects.map(p => p.repo.toLowerCase()).concat([USER.toLowerCase(), (USER + '.github.io').toLowerCase()]));
+        const data = (await res.json()).filter(r => !r.fork && allowed.has(r.name.toLowerCase())).map(r => ({
             name: r.name, url: r.html_url, description: r.description, language: r.language,
             stars: r.stargazers_count, pushed: r.pushed_at, created: r.created_at
         }));
@@ -303,12 +305,12 @@
                 actions: [{ label: 'Open GitHub profile', kind: 'open', value: GH }], chips: []
             };
         }
-        const src = { label: `api.github.com · live · ${repos.length} public repos`, href: GH + '?tab=repositories' };
+        const src = { label: `api.github.com · live · ${repos.length} portfolio repos`, href: GH + '?tab=repositories' };
         if (/ star/.test(nq)) {
             const total = repos.reduce((s, r) => s + r.stars, 0);
             const top = repos.filter(r => r.stars).sort((a, b) => b.stars - a.stars).slice(0, 3);
             return {
-                text: `Live from GitHub: ${total} star${total === 1 ? '' : 's'} across ${repos.length} public repos.` +
+                text: `Live from GitHub: ${total} star${total === 1 ? '' : 's'} across ${repos.length} portfolio repos.` +
                     (top.length ? '\n\n' + top.map(r => `▸ ${r.name} — ★ ${r.stars}`).join('\n') : ''),
                 source: src, actions: [{ label: 'Open GitHub', kind: 'open', value: GH }], chips: ['What are you working on lately?']
             };
@@ -324,7 +326,7 @@
         }
         if (/ how many | count | number of /.test(nq)) {
             return {
-                text: `${repos.length} public repositories on record (forks excluded):\n\n` + repos.map(r => `▸ ${r.name}`).join('\n'),
+                text: `${repos.length} portfolio repositories on record:\n\n` + repos.map(r => `▸ ${r.name}`).join('\n'),
                 source: src, actions: [{ label: 'Open repositories', kind: 'open', value: GH + '?tab=repositories' }], chips: []
             };
         }

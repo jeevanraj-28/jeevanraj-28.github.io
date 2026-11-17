@@ -230,12 +230,13 @@
             ids.some(id => KB.domains[id].words.some(w => (' ' + d.keywords + ' ' + d.text.toLowerCase() + ' ').includes(' ' + w + ' '))));
         if (!projects.length && !exp.length) {
             return {
-                text: `I have nothing indexed for ${labels.join(' / ')}. I won't stretch other work to fit.`,
+                text: `Nothing on record for ${labels.join(' / ')}. I won't dress up other work to fit.`,
                 source: { label: 'Knowledge index' }, actions: [], chips: ['What domains does Jeevan work in?']
             };
         }
-        let text = `${labels.join(' + ')}: ${projects.length} project${projects.length === 1 ? '' : 's'}` +
-            (exp.length ? ` and ${exp.length} internship${exp.length === 1 ? '' : 's'}` : '') + '\n';
+        const count = n => ['zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'][n] || String(n);
+        let text = `${labels.join(' + ')}. ${count(projects.length)} project${projects.length === 1 ? '' : 's'}` +
+            (exp.length ? `, ${count(exp.length).toLowerCase()} internship${exp.length === 1 ? '' : 's'}` : '') + ' on record:\n';
         projects.forEach(p => { text += `\n▸ ${p.name}\n  ${p.hook}\n`; });
         exp.forEach(d => { text += `\n▸ ${d.title}\n`; });
         const actions = [{ label: 'Show on page', kind: 'focus', value: projects.map(p => p.id) }];
@@ -254,7 +255,7 @@
             .map(([id, d]) => ({ label: d.label, n: KB.projects.filter(p => p.domains.includes(id)).length }))
             .filter(r => r.n).sort((a, b) => b.n - a.n);
         return {
-            text: 'Areas covered by Jeevan\'s public work (projects per area):\n\n' +
+            text: 'Coverage across Jeevan\'s public work, projects per domain:\n\n' +
                 rows.map(r => `▸ ${r.label.padEnd(22)} ${'■'.repeat(r.n)} ${r.n}`).join('\n'),
             source: { label: 'Project tags in my index' },
             actions: [],
@@ -267,7 +268,7 @@
         try { chunks = await fetchReadmeChunks(p); }
         catch {
             const a = projectAnswer(p);
-            a.text = `I couldn't reach GitHub just now, so here is what I have indexed:\n\n` + a.text;
+            a.text = `GitHub isn't responding. Here is what I hold locally:\n\n` + a.text;
             return a;
         }
         const own = new Set(tokens([p.name, p.repo].concat(p.aliases).join(' ')));
@@ -280,7 +281,7 @@
         if (!best) best = chunks.find(c => fallbackOrder.some(h => c.heading.toLowerCase().includes(h))) || chunks[0];
         if (!best) return projectAnswer(p);
         return {
-            text: `From the ${p.name} README → "${best.heading}":\n\n${trimTo(best.text, 650)}`,
+            text: `Pulled live from the ${p.name} README, section "${best.heading}":\n\n${trimTo(best.text, 650)}`,
             source: { label: `${p.repo}/README.md`, href: `${repoUrl(p)}#${slug(best.heading)}` },
             actions: [
                 { label: 'Read full README', kind: 'open', value: `${repoUrl(p)}#readme` },
@@ -296,8 +297,8 @@
         catch (e) {
             return {
                 text: e.message === 'rate'
-                    ? 'GitHub\'s public API rate limit is used up for your network right now, so I can\'t fetch live data. The profile itself has it all.'
-                    : 'I couldn\'t reach the GitHub API just now.',
+                    ? 'GitHub\'s rate limit is maxed out for your network. Live data is offline for now. The profile itself is one click away.'
+                    : 'GitHub isn\'t responding. Try again in a moment.',
                 source: { label: 'api.github.com' },
                 actions: [{ label: 'Open GitHub profile', kind: 'open', value: GH }], chips: []
             };
@@ -307,7 +308,7 @@
             const total = repos.reduce((s, r) => s + r.stars, 0);
             const top = repos.filter(r => r.stars).sort((a, b) => b.stars - a.stars).slice(0, 3);
             return {
-                text: `${total} star${total === 1 ? '' : 's'} across ${repos.length} public repos.` +
+                text: `Live from GitHub: ${total} star${total === 1 ? '' : 's'} across ${repos.length} public repos.` +
                     (top.length ? '\n\n' + top.map(r => `▸ ${r.name} — ★ ${r.stars}`).join('\n') : ''),
                 source: src, actions: [{ label: 'Open GitHub', kind: 'open', value: GH }], chips: ['What are you working on lately?']
             };
@@ -317,20 +318,20 @@
             repos.forEach(r => { if (r.language) counts[r.language] = (counts[r.language] || 0) + 1; });
             const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]);
             return {
-                text: 'Main language per public repo (as GitHub detects it):\n\n' + rows.map(([l, n]) => `▸ ${l.padEnd(18)} ${n}`).join('\n'),
+                text: 'Language breakdown, live from GitHub (main language per repo):\n\n' + rows.map(([l, n]) => `▸ ${l.padEnd(18)} ${n}`).join('\n'),
                 source: src, actions: [], chips: ['What skills does Jeevan have?']
             };
         }
         if (/ how many | count | number of /.test(nq)) {
             return {
-                text: `${repos.length} public repositories (forks excluded):\n\n` + repos.map(r => `▸ ${r.name}`).join('\n'),
+                text: `${repos.length} public repositories on record (forks excluded):\n\n` + repos.map(r => `▸ ${r.name}`).join('\n'),
                 source: src, actions: [{ label: 'Open repositories', kind: 'open', value: GH + '?tab=repositories' }], chips: []
             };
         }
         const meta = new Set([USER.toLowerCase(), (USER + '.github.io').toLowerCase()]);
         const recent = repos.filter(r => !meta.has(r.name.toLowerCase())).slice(0, 4);
         return {
-            text: 'Most recently pushed repositories:\n\n' + recent.map(r => {
+            text: 'Live from GitHub. Latest activity:\n\n' + recent.map(r => {
                 const p = KB.projects.find(x => x.repo.toLowerCase() === r.name.toLowerCase());
                 return `▸ ${p ? p.name : r.name} — ${ago(r.pushed)}` + (p ? `\n  ${p.hook}` : (r.description ? `\n  ${trimTo(r.description, 90)}` : ''));
             }).join('\n'),
@@ -383,17 +384,17 @@
             if (where.length) {
                 found.push(t);
                 where.forEach(w => { if (w.project) focus.add(w.project.id); });
-                lines.push(`▸ ${t}: yes — ${where.map(w => w.where).join(', ')}`);
+                lines.push(`▸ ${t.toUpperCase()}: confirmed. ${where.map(w => w.where).join(', ')}`);
             } else {
                 missing.push(t);
-                lines.push(`▸ ${t}: not in any of his listed skills or projects`);
+                lines.push(`▸ ${t.toUpperCase()}: no record in his skills or projects`);
             }
         });
         const actions = [];
         if (focus.size) actions.push({ label: 'Show those projects', kind: 'focus', value: [...focus] });
         actions.push({ label: 'Go to skills', kind: 'scroll', value: 'skills' });
         return {
-            text: lines.join('\n') + (missing.length ? '\n\nI only report what I can point to. Ask Jeevan directly about anything not listed.' : ''),
+            text: lines.join('\n') + (missing.length ? '\n\nI only confirm what I can point to. For the rest, ask Jeevan.' : ''),
             source: { label: 'Skills section + project stacks', href: '#skills' },
             actions, chips: ['What skills does Jeevan have?']
         };
@@ -409,20 +410,20 @@
         const q = (question || '').trim().slice(0, 300);
         const nq = norm(q);
 
-        if (!q) return { text: 'Ask me about Jeevan\'s projects, skills or experience.', source: null, actions: [], chips: SUGGESTED };
+        if (!q) return { text: 'Standing by. Ask about Jeevan\'s projects, skills or experience.', source: null, actions: [], chips: SUGGESTED };
 
         if (/^ (hi|hello|hey|yo|hola|namaste|hii+|good (morning|afternoon|evening)) ?\W*$/.test(nq) || (nq.split(' ').length <= 4 && /^ (hi|hello|hey) /.test(nq))) {
             return {
-                text: 'Hello. I\'m Cortex, the guide for this portfolio. Ask me about Jeevan\'s work by area (AI, ML, data science, RAG, NLP, computer vision), a specific project, or what he has pushed to GitHub lately.',
+                text: 'Cortex online. I track everything Jeevan has built: AI, ML, data science, RAG, NLP, vision. Where do you want to start?',
                 source: null, actions: [], chips: SUGGESTED
             };
         }
         if (/ (thanks|thank you|thx|cool|great|nice|awesome|ok|okay) $/.test(nq) && nq.split(' ').length <= 5) {
-            return { text: 'Anytime. Anything else?', source: null, actions: [], chips: SUGGESTED.slice(1, 4) };
+            return { text: 'Standing by.', source: null, actions: [], chips: SUGGESTED.slice(1, 4) };
         }
         if (/ (help|what can you do|what do you do|commands|options|menu) /.test(nq)) {
             return {
-                text: 'What I can do, for real:\n\n▸ Show work by area: "show me your RAG work", "data science projects"\n▸ Explain a project from its README, fetched live: "how does Lumina work?"\n▸ Live GitHub: "what are you working on lately?", "how many stars?"\n▸ Facts: education, internships, skills, contact\n▸ Actions: open the resume, copy the email, jump to a section\n\nEvery answer shows its source. If I don\'t have it, I say so.',
+                text: 'Here is what I can pull:\n\n▸ Work by domain: "show me your RAG work", "data science projects"\n▸ Project internals, read live from the README: "how does Lumina work?"\n▸ Live GitHub: "what is he working on?", "how many stars?"\n▸ Record: education, internships, skills, contact\n▸ Actions: resume, email, jump to any section\n\nEvery answer carries its source. No source, no answer.',
                 source: null, actions: [], chips: SUGGESTED
             };
         }
@@ -431,14 +432,14 @@
         }
         if (/ (resume|curriculum vitae|download (your |his )?cv|your cv|his cv) /.test(nq)) {
             return {
-                text: 'Here is Jeevan\'s one-page resume (PDF).',
+                text: 'Resume is ready. One page, PDF.',
                 source: { label: KB.owner.resume, href: KB.owner.resume },
                 actions: [{ label: 'Open resume', kind: 'open', value: KB.owner.resume }], chips: ['How do I contact Jeevan?']
             };
         }
         const nav = /^ (go to|take me to|scroll to|jump to|open|show)( the)? (\w+)( section)? $/.exec(nq);
         if (nav && SECTIONS[nav[3]]) {
-            return { text: `Taking you to ${nav[3]}.`, source: null, actions: [{ label: 'Go', kind: 'scroll', value: SECTIONS[nav[3]], auto: true }], chips: [] };
+            return { text: `Moving you to ${nav[3]}.`, source: null, actions: [{ label: 'Go', kind: 'scroll', value: SECTIONS[nav[3]], auto: true }], chips: [] };
         }
         if (/^ (open )?(github|linkedin) $/.test(nq)) {
             const gh = nq.includes('github');
@@ -458,7 +459,7 @@
         if (/ (internships?|experience|work experience|worked|jobs?|employment|companies) /.test(nq) && !matchProjects(nq).length && !matchDomains(nq).filter(d => d !== 'ai').length && !skillTerms(nq).length) {
             const exp = KB.docs.filter(d => d.section === 'experience');
             return {
-                text: exp.map(d => `▸ ${d.title}\n  ${d.text.split('. ').slice(1).join('. ')}`).join('\n\n'),
+                text: 'Two internships on record:\n\n' + exp.map(d => `▸ ${d.title}\n  ${d.text.split('. ').slice(1).join('. ')}`).join('\n\n'),
                 source: { label: 'Experience section', href: '#experience' },
                 actions: [{ label: 'Go to experience', kind: 'scroll', value: 'experience' }],
                 chips: ['Show me Healthcare AI work', 'What skills does Jeevan have?']
@@ -498,12 +499,12 @@
         if (/ (best|top|flagship|strongest|favou?rite|proudest|featured) /.test(nq)) {
             lastProject = projectById.lumina;
             const a = projectAnswer(projectById.lumina);
-            a.text = 'The featured project is Lumina RAG Assistant.\n\n' + a.text;
+            a.text = 'Flagship: ' + a.text;
             return a;
         }
         if (/ (all|list|every) (the )?projects | projects$/.test(nq) || /^ (projects|portfolio|work) $/.test(nq)) {
             return {
-                text: KB.projects.map((p, i) => `${String(i + 1).padStart(2, '0')} ▸ ${p.name}\n    ${p.hook}`).join('\n'),
+                text: `${KB.projects.length} projects on record:\n\n` + KB.projects.map((p, i) => `${String(i + 1).padStart(2, '0')} ▸ ${p.name}\n    ${p.hook}`).join('\n'),
                 source: { label: 'Projects section', href: '#projects' },
                 actions: [{ label: 'Go to projects', kind: 'scroll', value: 'projects' }],
                 chips: KB.projects.slice(0, 3).map(p => `Tell me about ${p.name}`)
@@ -521,7 +522,7 @@
         }
 
         return {
-            text: 'That isn\'t in anything I can see (this site and Jeevan\'s public GitHub), so I won\'t guess. Jeevan can answer it directly.',
+            text: 'No record of that. My scope is Jeevan\'s work, and I don\'t guess outside it. He can answer you directly.',
             source: { label: 'No matching source' },
             actions: ownerLinks().slice(0, 2),
             chips: SUGGESTED.slice(0, 3)

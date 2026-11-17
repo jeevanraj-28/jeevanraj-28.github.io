@@ -17,12 +17,12 @@
     };
 
     const SECTION_MESSAGES = {
-        hero: 'Initializing...',
-        about: 'Loading Profile...',
-        experience: 'Experience Indexed',
-        projects: 'Analyzing Projects...',
-        skills: 'Capabilities Loaded',
-        contact: 'Communication Ready'
+        hero: 'Cortex online.',
+        about: 'Profile loaded.',
+        experience: 'Service record.',
+        projects: 'Six projects on record.',
+        skills: 'Capability matrix.',
+        contact: 'Channel open.'
     };
 
     const SECTION_ORDER = ['hero', 'about', 'experience', 'projects', 'skills', 'contact'];
@@ -41,40 +41,64 @@
         'floatHigher', 'scan', 'sleepBrief', 'particles'
     ];
 
-    const ROBOT_SVG = `<svg class="cortex-robot-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 34" width="64" height="68" aria-hidden="true">
+    // Holographic AI core: layered counter-rotating rings, tumbling orbits,
+    // flickering circuit fragments and a bright core. Pure SVG + CSS animation.
+    // Class hooks kept from the old robot: cortex-robot-svg, cortex-head-group
+    // (tilts toward the cursor), cortex-pupil (core, tracks the cursor),
+    // cortex-screen-overlay (scan line).
+    function orbSVG(size, uid) {
+        let seed = 7;
+        const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+        let frags = '';
+        for (let i = 0; i < 72; i++) {
+            const a = rnd() * Math.PI * 2;
+            const r = 19 + rnd() * 32;
+            const x = (60 + Math.cos(a) * r).toFixed(1);
+            const y = (60 + Math.sin(a) * r).toFixed(1);
+            const w = (1 + rnd() * 4.5).toFixed(1);
+            const h = (0.5 + rnd() * 1.1).toFixed(1);
+            const deg = Math.round(a * 180 / Math.PI + 90);
+            const col = rnd() > 0.75 ? COLORS.secondary : COLORS.primary;
+            const op = (0.35 + rnd() * 0.6).toFixed(2);
+            const flick = rnd() > 0.55 ? ` class="cx-flick" style="animation-delay:-${(rnd() * 3).toFixed(2)}s"` : '';
+            frags += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${col}" opacity="${op}" transform="rotate(${deg} ${x} ${y})"${flick}/>`;
+        }
+        const P = COLORS.primary, S = COLORS.secondary;
+        return `<svg class="cortex-robot-svg cortex-orb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true">
         <defs>
-            <filter id="cx-glow"><feGaussianBlur stdDeviation="0.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <radialGradient id="cx-halo-${uid}">
+                <stop offset="0" stop-color="${P}" stop-opacity="0.32"/>
+                <stop offset="0.45" stop-color="${S}" stop-opacity="0.14"/>
+                <stop offset="1" stop-color="${S}" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="cx-core-${uid}">
+                <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
+                <stop offset="0.35" stop-color="${P}" stop-opacity="0.9"/>
+                <stop offset="1" stop-color="${P}" stop-opacity="0"/>
+            </radialGradient>
         </defs>
+        <circle class="cx-halo" cx="60" cy="60" r="60" fill="url(#cx-halo-${uid})"/>
         <g class="cortex-head-group">
-            <line x1="16" y1="3" x2="16" y2="6" stroke="${COLORS.secondary}" stroke-width="1" stroke-linecap="round"/>
-            <circle class="cortex-antenna-tip" cx="16" cy="2" r="1.5" fill="${COLORS.secondary}"/>
-            <rect x="7" y="6" width="18" height="12" rx="2" fill="#1a2520" stroke="${COLORS.primary}" stroke-width="0.7"/>
-            <rect x="9" y="8" width="14" height="8" rx="0.5" fill="${COLORS.dark}"/>
-            <line x1="9" y1="10" x2="23" y2="10" stroke="${COLORS.primary}" stroke-width="0.15" opacity="0.15"/>
-            <line x1="9" y1="12" x2="23" y2="12" stroke="${COLORS.primary}" stroke-width="0.15" opacity="0.1"/>
-            <line x1="9" y1="14" x2="23" y2="14" stroke="${COLORS.primary}" stroke-width="0.15" opacity="0.08"/>
-            <rect class="cortex-screen-overlay" x="9" y="8" width="14" height="1" fill="${COLORS.primary}" opacity="0" rx="0.2"/>
-            <g class="cortex-eye-left">
-                <rect x="11" y="10" width="4" height="3" rx="0.5" fill="rgba(177,255,214,0.08)"/>
-                <rect class="cortex-pupil cortex-pupil-left" x="12" y="10.5" width="2" height="2" rx="0.3" fill="${COLORS.primary}" filter="url(#cx-glow)"/>
-            </g>
-            <g class="cortex-eye-right">
-                <rect x="19" y="10" width="4" height="3" rx="0.5" fill="rgba(177,255,214,0.08)"/>
-                <rect class="cortex-pupil cortex-pupil-right" x="20" y="10.5" width="2" height="2" rx="0.3" fill="${COLORS.primary}" filter="url(#cx-glow)"/>
-            </g>
+            <g class="cx-ring cx-r1"><circle cx="60" cy="60" r="54" fill="none" stroke="${P}" stroke-width="1.1" stroke-dasharray="24 5 4 5 42 9 8 13 30 8 60 12" opacity="0.8"/></g>
+            <g class="cx-ring cx-r2"><circle cx="60" cy="60" r="49" fill="none" stroke="${P}" stroke-width="2.6" stroke-dasharray="0.7 3.1" opacity="0.4"/></g>
+            <g class="cx-gyro cx-g1"><g class="cx-tumble"><circle cx="60" cy="60" r="45" fill="none" stroke="${P}" stroke-width="0.7" opacity="0.55"/></g></g>
+            <g class="cx-gyro cx-g2"><g class="cx-tumble"><circle cx="60" cy="60" r="45" fill="none" stroke="${S}" stroke-width="0.9" stroke-dasharray="14 4" opacity="0.7"/></g></g>
+            <g class="cx-boost"><g class="cx-ring cx-r3"><circle cx="60" cy="60" r="40" fill="none" stroke="${S}" stroke-width="2.4" stroke-dasharray="58 22 16 28 40 87" opacity="0.9"/></g></g>
+            <g class="cx-ring cx-frags">${frags}</g>
+            <g class="cx-boost-rev"><g class="cx-ring cx-r4"><circle cx="60" cy="60" r="29" fill="none" stroke="${P}" stroke-width="1.6" stroke-dasharray="38 7 12 7 66 52" opacity="0.95"/></g></g>
+            <g class="cx-ring cx-r5"><circle cx="60" cy="60" r="21" fill="none" stroke="${P}" stroke-width="0.6" stroke-dasharray="2 2" opacity="0.6"/></g>
+            <circle class="cx-ripple" cx="60" cy="60" r="24" fill="none" stroke="${P}" stroke-width="1"/>
+            <rect class="cortex-screen-overlay" x="14" y="59.5" width="92" height="1" fill="${P}"/>
         </g>
-        <rect x="9" y="19" width="14" height="7" rx="1.5" fill="#1a2520" stroke="${COLORS.primary}" stroke-width="0.5"/>
-        <line x1="12" y1="21.5" x2="20" y2="21.5" stroke="${COLORS.primary}" stroke-width="0.3" opacity="0.25"/>
-        <line x1="12" y1="23.5" x2="20" y2="23.5" stroke="${COLORS.primary}" stroke-width="0.3" opacity="0.15"/>
-        <circle cx="16" cy="22.5" r="1" fill="${COLORS.secondary}" opacity="0.5"/>
-        <g class="cortex-arm-left"><rect x="5" y="20" width="4" height="2.5" rx="1" fill="#1a2520" stroke="${COLORS.primary}" stroke-width="0.4"/></g>
-        <g class="cortex-arm-right"><rect x="23" y="20" width="4" height="2.5" rx="1" fill="#1a2520" stroke="${COLORS.primary}" stroke-width="0.4"/></g>
-        <rect x="12" y="26.5" width="8" height="2.5" rx="0.5" fill="${COLORS.secondary}" opacity="0.8"/>
-        <g class="cortex-flame">
-            <rect x="14" y="29" width="4" height="2" fill="${COLORS.primary}" opacity="0.55" rx="0.3"/>
-            <rect x="15" y="30.5" width="2" height="1.5" fill="${COLORS.secondary}" opacity="0.35" rx="0.2"/>
+        <g class="cortex-pupil">
+            <circle class="cx-core-glow" cx="60" cy="60" r="17" fill="url(#cx-core-${uid})"/>
+            <circle class="cx-core-ring" cx="60" cy="60" r="10" fill="none" stroke="${P}" stroke-width="0.8" stroke-dasharray="9 3"/>
+            <circle class="cx-core" cx="60" cy="60" r="5" fill="#effff7"/>
         </g>
     </svg>`;
+    }
+
+    const ROBOT_SVG = orbSVG(96, 'main');
 
     // ========== STATE ==========
 
@@ -177,9 +201,11 @@
             if (!els.speech) return;
             els.speech.textContent = text;
             els.speech.classList.add('cortex-speech-visible');
+            if (els.robotSvg) els.robotSvg.classList.add('cortex-speaking');
             clearTimeout(state.speechTimer);
             state.speechTimer = setTimeout(() => {
                 els.speech.classList.remove('cortex-speech-visible');
+                if (els.robotSvg) els.robotSvg.classList.remove('cortex-speaking');
                 setTimeout(() => this._next(), 300);
             }, duration);
         },
@@ -189,6 +215,7 @@
             this.active = false;
             clearTimeout(state.speechTimer);
             if (els.speech) els.speech.classList.remove('cortex-speech-visible');
+            if (els.robotSvg) els.robotSvg.classList.remove('cortex-speaking');
         }
     };
 
@@ -282,12 +309,12 @@
             if (!state.visible || state.sleeping || !els.robotSvg) return;
             const rect = els.container.getBoundingClientRect();
             const robotCx = rect.left + rect.width / 2;
-            const robotCy = rect.top + 20; // ~eye level
+            const robotCy = rect.top + rect.height / 2;
             const dx = state.cursorX - robotCx;
             const dy = state.cursorY - robotCy;
             const angle = Math.atan2(dy, dx);
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const maxShift = 1;
+            const maxShift = 5;
             const factor = Math.min(dist / 200, 1);
             const ex = Math.cos(angle) * maxShift * factor;
             const ey = Math.sin(angle) * maxShift * factor;
@@ -331,7 +358,7 @@
         _px(section) {
             const vw = window.innerWidth;
             const vh = window.innerHeight;
-            const rw = 64, rh = 68;
+            const rw = 96, rh = 96;
             const isMobile = vw < 768;
             const mx = isMobile ? 14 : this.MARGIN_X;
             const myTop = isMobile ? 80 : this.MARGIN_Y_TOP;
@@ -495,7 +522,7 @@
                         if (!Chat.open && kbp) Speech.show(kbp.hook, 3200);
                     }, 900);
                     timer2 = setTimeout(() => {
-                        if (!Chat.open) Speech.show('Click me to ask about it.', 2000);
+                        if (!Chat.open) Speech.show('Tap the core for the full brief.', 2200);
                     }, 4400);
                     Achievements.check();
                 });
@@ -1029,7 +1056,7 @@
                 const elapsed = Date.now() - state.startTime;
                 if (elapsed > 180000 && !state.shownLongStayMsg) {
                     state.shownLongStayMsg = true;
-                    Speech.show('Thanks for taking the time to explore my work.', 3500);
+                    Speech.show('Questions? Tap the core.', 3500);
                 }
             }, 30000);
         }
@@ -1083,10 +1110,14 @@
             panel.setAttribute('aria-label', 'Ask Cortex about Jeevan');
             panel.innerHTML =
                 '<div class="cortex-chat-header">' +
-                    '<div><div class="cortex-chat-title">CORTEX // ASK ME</div>' +
-                    '<div class="cortex-chat-sub">Answers from this site + live GitHub. Sources shown. Nothing invented.</div></div>' +
+                    '<div class="cortex-chat-id">' +
+                        '<div class="cortex-chat-orb">' + orbSVG(44, 'chat') + '</div>' +
+                        '<div><div class="cortex-chat-title">CORTEX</div>' +
+                        '<div class="cortex-chat-status"><span class="cortex-chat-dot"></span><span class="cortex-chat-state">ONLINE</span> · 6 PROJECTS · LIVE GITHUB</div></div>' +
+                    '</div>' +
                     '<button class="cortex-chat-close" type="button" aria-label="Close chat">ESC</button>' +
                 '</div>' +
+                '<div class="cortex-chat-sub">Answers come from this site and Jeevan\'s public GitHub, with sources. Nothing is invented.</div>' +
                 '<div class="cortex-chat-log" aria-live="polite"></div>' +
                 '<div class="cortex-chat-chips"></div>' +
                 '<form class="cortex-chat-form" autocomplete="off">' +
@@ -1099,6 +1130,9 @@
             els.chatLog = panel.querySelector('.cortex-chat-log');
             els.chatChips = panel.querySelector('.cortex-chat-chips');
             els.chatInput = panel.querySelector('.cortex-chat-input');
+            els.chatOrb = panel.querySelector('.cortex-chat-orb .cortex-robot-svg');
+            els.chatOrb.classList.add('cortex-visible');
+            els.chatState = panel.querySelector('.cortex-chat-state');
 
             panel.querySelector('.cortex-chat-close').addEventListener('click', () => this.close());
             panel.querySelector('.cortex-chat-form').addEventListener('submit', (e) => {
@@ -1136,10 +1170,11 @@
             if (state.sleeping) SleepMode.wake();
             if (!this._greeted) {
                 this._greeted = true;
+                this.busy = true;
                 this._bot({
-                    text: 'Hi, I\'m Cortex. Ask me about Jeevan\'s work by area (AI, ML, data science, RAG, NLP, computer vision), any project, or what he\'s pushed to GitHub lately.',
+                    text: 'Cortex online. I track everything Jeevan has built: AI, ML, data science, RAG, NLP, vision. Where do you want to start?',
                     source: null, actions: [], chips: window.CortexAgent.suggested
-                });
+                }, () => { this._mode('online'); this.busy = false; });
             }
             setTimeout(() => els.chatInput.focus({ preventScroll: true }), 150);
         },
@@ -1157,15 +1192,20 @@
             this.busy = true;
             this._line('cortex-msg cortex-msg-user', q);
             this._setChips([]);
-            const thinking = this._line('cortex-chat-thinking', 'searching sources…');
-            if (els.robotSvg) els.robotSvg.classList.add('cortex-thinking');
+            const thinking = this._line('cortex-chat-thinking', 'scanning sources…');
+            this._mode('thinking');
             let answer;
             try { answer = await window.CortexAgent.ask(q); }
-            catch { answer = { text: 'Something went wrong on my side. Try again, or email Jeevan directly.', source: null, actions: [], chips: [] }; }
+            catch { answer = { text: 'Signal lost. Try again, or reach Jeevan directly.', source: null, actions: [], chips: [] }; }
             thinking.remove();
-            if (els.robotSvg) els.robotSvg.classList.remove('cortex-thinking');
-            this._bot(answer);
-            this.busy = false;
+            this._bot(answer, () => { this._mode('online'); this.busy = false; });
+        },
+
+        _mode(m) {
+            if (!els.chatOrb) return;
+            els.chatOrb.classList.toggle('cortex-thinking', m === 'thinking');
+            els.chatOrb.classList.toggle('cortex-speaking', m === 'speaking');
+            els.chatState.textContent = m === 'thinking' ? 'SEARCHING' : m === 'speaking' ? 'RESPONDING' : 'ONLINE';
         },
 
         _line(cls, text) {
@@ -1177,13 +1217,44 @@
             return div;
         },
 
-        _bot(a) {
+        _bot(a, done) {
             const msg = document.createElement('div');
             msg.className = 'cortex-msg cortex-msg-bot';
             const body = document.createElement('div');
             body.className = 'cortex-msg-text';
-            body.textContent = a.text;
             msg.appendChild(body);
+            els.chatLog.appendChild(msg);
+            const extras = document.createElement('div');
+            extras.className = 'cortex-msg-extras';
+            const finish = () => {
+                body.textContent = a.text;
+                msg.appendChild(extras);
+                els.chatLog.scrollTop = els.chatLog.scrollHeight;
+                (a.actions || []).filter(x => x.auto).forEach(x => this._run(x));
+                this._setChips(a.chips || []);
+                if (done) done();
+            };
+            const text = a.text || '';
+            if (state.reducedMotion || text.length < 2) {
+                this._fill(extras, a);
+                finish();
+                return;
+            }
+            this._fill(extras, a);
+            this._mode('speaking');
+            const step = Math.max(2, Math.ceil(text.length / 45)); // ~0.75s for any length
+            let i = 0;
+            const tick = () => {
+                i = Math.min(text.length, i + step);
+                body.textContent = text.slice(0, i);
+                els.chatLog.scrollTop = els.chatLog.scrollHeight;
+                if (i < text.length) requestAnimationFrame(tick);
+                else finish();
+            };
+            requestAnimationFrame(tick);
+        },
+
+        _fill(msg, a) {
 
             if (a.source && a.source.label) {
                 const src = document.createElement(a.source.href ? 'a' : 'div');
@@ -1211,10 +1282,6 @@
                 });
                 msg.appendChild(row);
             }
-            els.chatLog.appendChild(msg);
-            els.chatLog.scrollTop = els.chatLog.scrollHeight;
-            (a.actions || []).filter(x => x.auto).forEach(x => this._run(x));
-            this._setChips(a.chips || []);
         },
 
         _setChips(chips) {
@@ -1428,10 +1495,10 @@
     }
 
     function greet() {
-        setTimeout(() => { if (!Chat.open) Speech.show('Click me. Ask about my work.', 3500); }, 3200);
+        setTimeout(() => { if (!Chat.open) Speech.show('Tap the core. Ask me about Jeevan.', 3500); }, 3200);
         const mem = Memory.load();
         if (mem.visitCount <= 1) {
-            Speech.show('Hello, Visitor.', 2500);
+            Speech.show('Cortex online.', 2500);
         } else if (mem.downloadedResume) {
             Speech.show('Good luck.', 2500);
         } else if (mem.totalTimeMs > 300000) {

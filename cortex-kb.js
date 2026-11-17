@@ -147,7 +147,7 @@ window.CORTEX_KB = {
         {
             id: 'site', title: 'About Cortex (me)', section: null,
             keywords: 'cortex you robot bot assistant how do you work are you ai llm chatgpt who made you',
-            text: 'I am Cortex, the guide for this portfolio. I answer from an index of this site and from Jeevan\'s public GitHub (repo list, recent activity and project READMEs, fetched live). Under the hood I am a small retrieval system (BM25 ranking over those sources), the same idea as Jeevan\'s RAG work, minus the generator. I do not use a language model, so I will not invent anything: if it is not in my sources, I say so.'
+            text: 'Cortex. Jeevan\'s portfolio intelligence.\n\nTwo sources: this site, and his public GitHub, read live. Under the hood I am a retrieval engine (BM25 ranking), the same principle as his RAG work, minus the generator. No language model means no guesswork. If it is not on record, I will tell you.'
         }
     ]
 };

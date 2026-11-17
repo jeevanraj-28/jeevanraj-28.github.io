@@ -946,3 +946,87 @@ a.cortex-msg-src:hover, a.cortex-msg-src:focus-visible { color: #B1FFD6; text-de
     .cortex-chat.cortex-chat-open { animation: none !important; }
     .cortex-chat { transition: opacity 0.15s, visibility 0.15s !important; }
 }
+
+/* ============================================
+   DISCOVERABILITY: ask tag + teaser + hero button
+   ============================================ */
+
+.cortex-ask-tag {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 2px);
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    color: #0a0f0d;
+    background: #B1FFD6;
+    padding: 2px 7px;
+    box-shadow: 0 0 12px rgba(177, 255, 214, 0.55);
+    pointer-events: none;
+    animation: cx-tag-pulse 2.4s ease-in-out infinite;
+}
+.cortex-ask-tag.cortex-ask-tag-used {
+    color: #B1FFD6;
+    background: rgba(6, 14, 11, 0.8);
+    border: 1px solid rgba(177, 255, 214, 0.4);
+    box-shadow: none;
+    animation: none;
+    opacity: 0.75;
+}
+@keyframes cx-tag-pulse { 0%, 100% { box-shadow: 0 0 6px rgba(177, 255, 214, 0.4); } 50% { box-shadow: 0 0 18px rgba(177, 255, 214, 0.9); } }
+.cortex-robot-wrapper:hover .cortex-ask-tag { opacity: 1; }
+
+.cortex-teaser {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    right: 0;
+    width: 250px;
+    padding: 12px 14px 12px;
+    background: rgba(6, 14, 11, 0.93);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(177, 255, 214, 0.75);
+    box-shadow: 0 0 22px rgba(177, 255, 214, 0.2), 4px 4px 0 #8B5CF6;
+    font-family: 'JetBrains Mono', monospace;
+    color: #e4fff1;
+    cursor: default;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.3s;
+    z-index: 4;
+}
+.cortex-teaser.cortex-teaser-visible { opacity: 1; visibility: visible; transform: none; }
+.cortex-teaser-title { margin: 0 0 4px; font-size: 10px; letter-spacing: 2px; color: #B1FFD6; }
+.cortex-teaser-body { margin: 0 0 10px; font-size: 11.5px; line-height: 1.45; }
+.cortex-teaser-qs { display: flex; flex-direction: column; gap: 6px; }
+.cortex-teaser-q {
+    text-align: left; font: inherit; font-size: 11.5px; cursor: pointer;
+    color: #B1FFD6; background: rgba(177, 255, 214, 0.05);
+    border: 1px solid rgba(177, 255, 214, 0.45); padding: 6px 9px;
+    transition: background 0.15s, color 0.15s;
+}
+.cortex-teaser-q::before { content: "\203A  "; color: #8B5CF6; }
+.cortex-teaser-q:hover, .cortex-teaser-q:focus-visible { background: #B1FFD6; color: #0a0f0d; outline: none; }
+.cortex-teaser-x {
+    position: absolute; top: 4px; right: 6px; background: none; border: none;
+    color: #889990; font-size: 16px; line-height: 1; cursor: pointer; padding: 4px;
+}
+.cortex-teaser-x:hover, .cortex-teaser-x:focus-visible { color: #B1FFD6; outline: none; }
+
+.cortex-hero-ask { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+.cortex-hero-ask .cx-hero-dot {
+    width: 10px; height: 10px; border-radius: 50%; background: #B1FFD6;
+    box-shadow: 0 0 10px #B1FFD6, 0 0 0 3px rgba(177, 255, 214, 0.2);
+    animation: cx-breathe-dot 1.6s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+    .cortex-teaser { width: min(250px, calc(100vw - 48px)); }
+    .cortex-ask-tag { left: auto; right: calc(100% + 2px); top: 50%; transform: translateY(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cortex-ask-tag, .cortex-hero-ask .cx-hero-dot { animation: none !important; }
+}

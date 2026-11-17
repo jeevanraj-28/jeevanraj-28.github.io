@@ -156,6 +156,7 @@
                 downloadedResume: false,
                 totalTimeMs: 0,
                 tourCompleted: false,
+                chatUsed: false,
                 achievements: []
             };
         },
@@ -957,21 +958,15 @@
         _sectionEls: {},
 
         init() {
-            const mem = Memory.load();
-            if (mem.tourCompleted || mem.visitCount > 1) return;
-            // Map section elements
+            // Map section elements (the tour can also be started from the chat)
             const sections = document.querySelectorAll('section');
             if (sections[0]) this._sectionEls.hero = sections[0];
             SECTION_ORDER.slice(1).forEach(id => {
                 const el = document.getElementById(id);
                 if (el) this._sectionEls[id] = el;
             });
-
-            // Show prompt after greeting delay
-            setTimeout(() => {
-                if (!state.visible || state.terminalOpen) return;
-                this._showPrompt();
-            }, 4000);
+            // Instead of a tour prompt, invite the visitor to ask Cortex
+            setTimeout(() => Teaser.show(), 3500);
         },
 
         _showPrompt() {
@@ -1165,6 +1160,9 @@
             this.open = true;
             Speech.clear();
             if (els.tourPrompt && els.tourPrompt.classList.contains('cortex-tour-visible')) Tour._dismiss();
+            Teaser.hide();
+            Memory.update(d => { d.chatUsed = true; });
+            if (els.askTag) els.askTag.classList.add('cortex-ask-tag-used');
             els.chat.classList.add('cortex-chat-open');
             els.container.classList.add('cortex-chatting');
             if (state.sleeping) SleepMode.wake();
@@ -1174,7 +1172,7 @@
                 this._bot({
                     text: 'Cortex online. I track everything Jeevan has built: AI, ML, data science, RAG, NLP, vision. Where do you want to start?',
                     source: null, actions: [], chips: window.CortexAgent.suggested
-                }, () => { this._mode('online'); this.busy = false; });
+                }, () => this._idle());
             }
             setTimeout(() => els.chatInput.focus({ preventScroll: true }), 150);
         },
@@ -1188,7 +1186,14 @@
 
         async ask(q) {
             q = (q || '').trim();
-            if (!q || this.busy || !window.CortexAgent) return;
+            if (!q || !window.CortexAgent) return;
+            if (this.busy) { this._pending = q; return; }
+            if (/\b(tour|walk me through|show me around|guide me)\b/i.test(q)) {
+                this._line('cortex-msg cortex-msg-user', q);
+                this._line('cortex-msg cortex-msg-bot', 'Starting the tour. Follow the core.');
+                setTimeout(() => { this.close(); Tour.start(); }, 700);
+                return;
+            }
             this.busy = true;
             this._line('cortex-msg cortex-msg-user', q);
             this._setChips([]);
@@ -1198,7 +1203,13 @@
             try { answer = await window.CortexAgent.ask(q); }
             catch { answer = { text: 'Signal lost. Try again, or reach Jeevan directly.', source: null, actions: [], chips: [] }; }
             thinking.remove();
-            this._bot(answer, () => { this._mode('online'); this.busy = false; });
+            this._bot(answer, () => this._idle());
+        },
+
+        _idle() {
+            this._mode('online');
+            this.busy = false;
+            if (this._pending) { const q = this._pending; this._pending = null; setTimeout(() => this.ask(q), 150); }
         },
 
         _mode(m) {
@@ -1347,6 +1358,59 @@
         }
     };
 
+    // ========== TEASER: one-tap questions so visitors start using Cortex ==========
+
+    const Teaser = {
+        QUESTIONS: ['Show me his RAG work', 'Best project?', 'Does he know PyTorch?'],
+        _timer: null,
+
+        build() {
+            const t = document.createElement('div');
+            t.className = 'cortex-teaser';
+            t.setAttribute('role', 'dialog');
+            t.setAttribute('aria-label', 'Ask Cortex a question');
+            t.innerHTML = '<button type="button" class="cortex-teaser-x" aria-label="Dismiss">×</button>' +
+                '<p class="cortex-teaser-title">CORTEX ONLINE</p>' +
+                '<p class="cortex-teaser-body">I know everything Jeevan has built. Try one:</p>' +
+                '<div class="cortex-teaser-qs"></div>';
+            const qs = t.querySelector('.cortex-teaser-qs');
+            this.QUESTIONS.forEach(q => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'cortex-teaser-q';
+                b.textContent = q;
+                b.addEventListener('click', (e) => { e.stopPropagation(); this.hide(); Chat.show(); setTimeout(() => Chat.ask(q), 650); });
+                qs.appendChild(b);
+            });
+            t.querySelector('.cortex-teaser-x').addEventListener('click', (e) => { e.stopPropagation(); this.hide(true); });
+            t.addEventListener('click', (e) => e.stopPropagation());
+            els.wrapper.appendChild(t);
+            els.teaser = t;
+        },
+
+        show() {
+            const mem = Memory.load();
+            let seen = false;
+            try { seen = sessionStorage.getItem('cortex_teaser') === '1'; } catch {}
+            if (mem.chatUsed || seen || Chat.open || state.terminalOpen || state.tourActive || !state.visible || !els.teaser) return;
+            Speech.clear();
+            els.teaser.classList.add('cortex-teaser-visible');
+            if (els.robotSvg) {
+                els.robotSvg.classList.add('cortex-speaking');
+                setTimeout(() => els.robotSvg && els.robotSvg.classList.remove('cortex-speaking'), 1600);
+            }
+            clearTimeout(this._timer);
+            this._timer = setTimeout(() => this.hide(), 16000);
+        },
+
+        hide(byUser) {
+            clearTimeout(this._timer);
+            if (els.teaser) els.teaser.classList.remove('cortex-teaser-visible');
+            try { sessionStorage.setItem('cortex_teaser', '1'); } catch {}
+            if (byUser) Memory.update(d => { d.tourCompleted = true; });
+        }
+    };
+
     // ========== DOM CREATION ==========
 
     function createDOM() {
@@ -1454,6 +1518,28 @@
         document.getElementById('cortex-tour-skip').addEventListener('click', () => Tour._dismiss());
 
         Chat.build();
+        Teaser.build();
+
+        // Always-visible label until the visitor has used the chat
+        els.askTag = document.createElement('span');
+        els.askTag.className = 'cortex-ask-tag';
+        els.askTag.textContent = 'ASK CORTEX';
+        if (Memory.load().chatUsed) els.askTag.classList.add('cortex-ask-tag-used');
+        els.wrapper.appendChild(els.askTag);
+
+        // Any element with data-cortex-open opens the chat (hero button)
+        document.querySelectorAll('[data-cortex-open]').forEach(el => {
+            el.addEventListener('click', (e) => { e.preventDefault(); Chat.show(); });
+        });
+
+        // "/" opens the chat from anywhere
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== '/' || Chat.open || state.terminalOpen) return;
+            const t = e.target;
+            if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+            e.preventDefault();
+            Chat.show();
+        });
     }
 
     // ========== ENTRANCE SEQUENCE ==========
@@ -1495,7 +1581,7 @@
     }
 
     function greet() {
-        setTimeout(() => { if (!Chat.open) Speech.show('Tap the core. Ask me about Jeevan.', 3500); }, 3200);
+        setTimeout(() => { if (!Chat.open) Speech.show('Tap the core. Ask me about Jeevan.', 3000); }, 3200);
         const mem = Memory.load();
         if (mem.visitCount <= 1) {
             Speech.show('Cortex online.', 2500);
@@ -1560,7 +1646,7 @@
                                 Tour.init();
                             }, 2000);
                         }
-                    }, 3000);
+                    }, 1200);
                 } else if (!entry.isIntersecting && !state.visible) {
                     clearTimeout(state.entranceTimer);
                 }

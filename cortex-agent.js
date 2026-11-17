@@ -234,7 +234,7 @@
                 source: { label: 'Knowledge index' }, actions: [], chips: ['What domains does Jeevan work in?']
             };
         }
-        const count = n => ['zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'][n] || String(n);
+        const count = n => ['zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'][n] || String(n);
         let text = `${labels.join(' + ')}. ${count(projects.length)} project${projects.length === 1 ? '' : 's'}` +
             (exp.length ? `, ${count(exp.length).toLowerCase()} internship${exp.length === 1 ? '' : 's'}` : '') + ' on record:\n';
         projects.forEach(p => { text += `\n▸ ${p.name}\n  ${p.hook}\n`; });

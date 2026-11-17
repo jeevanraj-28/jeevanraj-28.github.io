@@ -20,7 +20,7 @@
         hero: 'Cortex online.',
         about: 'Profile loaded.',
         experience: 'Service record.',
-        projects: 'Six projects on record.',
+        projects: 'Projects on record.',
         skills: 'Capability matrix.',
         contact: 'Channel open.'
     };
@@ -510,15 +510,15 @@
                 card.addEventListener('mouseenter', () => {
                     if (!state.visible || state.sleeping) return;
                     hoverStart = Date.now();
-                    state.viewedProjects.add(i % 6); // 6 unique projects
+                    const NP = window.CORTEX_KB ? window.CORTEX_KB.projects.length : 7;
+                    state.viewedProjects.add(i % NP);
                     Memory.update(d => {
-                        const projNames = ['lumina-rag', 'clinical-nlp', 'disaster', 'cafecritic', 'cortex', 'care'];
-                        const name = projNames[i % 6];
+                        const name = window.CORTEX_KB && window.CORTEX_KB.projects[i % NP].id;
                         if (name && !d.viewedProjects.includes(name)) {
                             d.viewedProjects.push(name);
                         }
                     });
-                    const kbp = window.CORTEX_KB && window.CORTEX_KB.projects[i % 6];
+                    const kbp = window.CORTEX_KB && window.CORTEX_KB.projects[i % NP];
                     timer1 = setTimeout(() => {
                         if (!Chat.open && kbp) Speech.show(kbp.hook, 3200);
                     }, 900);
@@ -870,6 +870,9 @@
                         '  │                                    │\n' +
                         '  │  06 ▸ CARE EMR + AI Scribe    [~]  │\n' +
                         '  │      Self-hosted EMR + speech AI   │\n' +
+                        '  │                                    │\n' +
+                        '  │  07 ▸ FuturePath AI           [✓]  │\n' +
+                        '  │      Career guidance + AI mentor   │\n' +
                         '  └────────────────────────────────────┘\n'
                     };
                 case 'skills':
@@ -1023,7 +1026,7 @@
         DEFS: {
             explorer: { name: 'EXPLORER', desc: 'Visited every section', check: () => { const m = Memory.load(); return m.viewedSections.length >= 6; } },
             curious: { name: 'CURIOUS', desc: 'Opened Developer Mode', check: () => { const m = Memory.load(); return m.achievements.includes('curious'); } },
-            researcher: { name: 'RESEARCHER', desc: 'Viewed every project', check: () => state.viewedProjects.size >= 6 }
+            researcher: { name: 'RESEARCHER', desc: 'Viewed every project', check: () => state.viewedProjects.size >= (window.CORTEX_KB ? window.CORTEX_KB.projects.length : 7) }
         },
         _shown: new Set(),
 
@@ -1096,7 +1099,7 @@
         busy: false,
         _greeted: false,
         _focusTimer: null,
-        PROJECT_ORDER: ['lumina', 'clinical', 'disaster', 'cafecritic', 'cortex', 'care'],
+        get PROJECT_ORDER() { return window.CORTEX_KB ? window.CORTEX_KB.projects.map(p => p.id) : []; },
 
         build() {
             const panel = document.createElement('div');
@@ -1108,7 +1111,7 @@
                     '<div class="cortex-chat-id">' +
                         '<div class="cortex-chat-orb">' + orbSVG(44, 'chat') + '</div>' +
                         '<div><div class="cortex-chat-title">CORTEX</div>' +
-                        '<div class="cortex-chat-status"><span class="cortex-chat-dot"></span><span class="cortex-chat-state">ONLINE</span> · 6 PROJECTS · LIVE GITHUB</div></div>' +
+                        '<div class="cortex-chat-status"><span class="cortex-chat-dot"></span><span class="cortex-chat-state">ONLINE</span> · ' + ((window.CORTEX_KB && window.CORTEX_KB.projects.length) || 7) + ' PROJECTS · LIVE GITHUB</div></div>' +
                     '</div>' +
                     '<button class="cortex-chat-close" type="button" aria-label="Close chat">ESC</button>' +
                 '</div>' +
@@ -1120,6 +1123,12 @@
                     '<input class="cortex-chat-input" type="text" maxlength="300" placeholder="Ask about RAG, ML, projects, skills…" aria-label="Your question">' +
                     '<button class="cortex-chat-send" type="submit" aria-label="Send">↵</button>' +
                 '</form>';
+            const backdrop = document.createElement('div');
+            backdrop.className = 'cortex-backdrop';
+            backdrop.setAttribute('aria-hidden', 'true');
+            backdrop.addEventListener('click', () => this.close());
+            document.body.appendChild(backdrop);
+            els.backdrop = backdrop;
             document.body.appendChild(panel);
             els.chat = panel;
             els.chatLog = panel.querySelector('.cortex-chat-log');
@@ -1164,6 +1173,8 @@
             Memory.update(d => { d.chatUsed = true; });
             if (els.askTag) els.askTag.classList.add('cortex-ask-tag-used');
             els.chat.classList.add('cortex-chat-open');
+            if (els.backdrop) els.backdrop.classList.add('cortex-backdrop-on');
+            document.documentElement.classList.add('cortex-focus-mode');
             els.container.classList.add('cortex-chatting');
             if (state.sleeping) SleepMode.wake();
             if (!this._greeted) {
@@ -1181,6 +1192,8 @@
             if (!this.open) return;
             this.open = false;
             if (els.chat) els.chat.classList.remove('cortex-chat-open');
+            if (els.backdrop) els.backdrop.classList.remove('cortex-backdrop-on');
+            document.documentElement.classList.remove('cortex-focus-mode');
             if (els.container) els.container.classList.remove('cortex-chatting');
         },
 
@@ -1256,13 +1269,14 @@
             const step = Math.max(2, Math.ceil(text.length / 45)); // ~0.75s for any length
             let i = 0;
             const tick = () => {
-                i = Math.min(text.length, i + step);
+                // Background tabs throttle timers: finish at once instead of stalling
+                i = document.hidden ? text.length : Math.min(text.length, i + step);
                 body.textContent = text.slice(0, i);
                 els.chatLog.scrollTop = els.chatLog.scrollHeight;
-                if (i < text.length) requestAnimationFrame(tick);
+                if (i < text.length) setTimeout(tick, 16);
                 else finish();
             };
-            requestAnimationFrame(tick);
+            setTimeout(tick, 16);
         },
 
         _fill(msg, a) {
@@ -1329,7 +1343,7 @@
         _scroll(id) {
             const el = id === 'top' ? document.body : document.getElementById(id);
             if (el) el.scrollIntoView({ behavior: state.reducedMotion ? 'auto' : 'smooth', block: 'start' });
-            if (window.innerWidth < 768) this.close();
+            this.close();
         },
 
         // Stop the marquee on the first matching card and outline every match.
@@ -1348,7 +1362,8 @@
             track.style.transition = state.reducedMotion ? 'none' : 'transform 0.6s ease';
             track.style.transform = 'translateX(-' + shift + 'px)';
             section.scrollIntoView({ behavior: state.reducedMotion ? 'auto' : 'smooth', block: 'start' });
-            if (window.innerWidth < 768) this.close();
+            this.close();
+            Speech.show('Ask again any time.', 2200);
             this._focusTimer = setTimeout(() => {
                 cards.forEach(c => c.classList.remove('cortex-card-focus'));
                 track.style.transition = '';
@@ -1589,7 +1604,7 @@
             Speech.show('Good luck.', 2500);
         } else if (mem.totalTimeMs > 300000) {
             Speech.show('Curiosity detected.', 2500);
-        } else if (mem.viewedProjects.length >= 6) {
+        } else if (window.CORTEX_KB && mem.viewedProjects.length >= window.CORTEX_KB.projects.length) {
             Speech.show('Everything indexed.', 2500);
         } else {
             Speech.show('Welcome back.', 2500);

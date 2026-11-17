@@ -1030,3 +1030,29 @@ a.cortex-msg-src:hover, a.cortex-msg-src:focus-visible { color: #B1FFD6; text-de
 @media (prefers-reduced-motion: reduce) {
     .cortex-ask-tag, .cortex-hero-ask .cx-hero-dot { animation: none !important; }
 }
+
+/* ============================================
+   FOCUS MODE: blur and dim the page behind the chat
+   ============================================ */
+
+.cortex-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 58;
+    background: radial-gradient(ellipse at 85% 85%, rgba(139, 92, 246, 0.16), transparent 55%), rgba(3, 8, 6, 0.55);
+    -webkit-backdrop-filter: blur(7px) saturate(0.8);
+    backdrop-filter: blur(7px) saturate(0.8);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease, visibility 0.35s;
+    cursor: pointer;
+}
+.cortex-backdrop.cortex-backdrop-on { opacity: 1; visibility: visible; }
+.cortex-focus-mode #custom-cursor { opacity: 0; }
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .cortex-backdrop { background: rgba(3, 8, 6, 0.8); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cortex-backdrop { transition: none; }
+}
